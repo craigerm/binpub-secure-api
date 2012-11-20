@@ -33,12 +33,16 @@ mongoose.connection.on('open', function(){
 
 // Set up our routes and start the server
 https_server = routes(https_server,  models);
+https_server.use(function setDefaultHeaders(req, res, next){
+	res.header("Access-Control-Allow-Origin", "*"); 
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+});
 /*
 https_server.use(function authenticate(req, res, next) {
 
 See https://github.com/jed/cookies  https://github.com/jed/keygrip
 
-Todo session cache lookup / Something like this / but it may or not be applied for different routes.
+Todo session cache lookup ?Something like this? but it may or not be applied for different routes.
     myPretendCacheClient.lookup(req.headers.cookie, function (err, res) {
         if (err) return next(err);
 

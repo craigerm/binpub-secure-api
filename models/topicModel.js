@@ -30,9 +30,7 @@ module.exports = function(models, mongoose) {
   
   models.listTopicsByUser = function listTopicsByUser(req, res, next){
     console.log('listTopicsByUser');
-	res.header("Access-Control-Allow-Origin", "*"); 
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    models.Topics.find().limit(20).sort('date', -1).execFind(function (arr,data) {
+    models.Topic.find().limit(20).sort('date', -1).execFind(function (arr,data) {
       console.log('finding');
 	  console.log(arr);
 	  console.log(data);
@@ -41,9 +39,7 @@ module.exports = function(models, mongoose) {
   };
   models.listTopicsByRepo = function getTopicsByRepo(req, res, next){
     console.log('listTopicsRepo');
-	res.header("Access-Control-Allow-Origin", "*"); 
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    models.Topics.find().limit(20).sort('date', -1).execFind(function (arr,data) {
+    models.Topic.find().limit(20).sort('date', -1).execFind(function (arr,data) {
       console.log('finding');
 	  console.log(arr);
 	  console.log(data);
@@ -52,8 +48,6 @@ module.exports = function(models, mongoose) {
   };
   models.getTopicData = function getTopicData(req, res, next){
     console.log('modifyUser');
-	res.header("Access-Control-Allow-Origin", "*"); 
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
     models.Topic.find({ repo_id: req.params.repo_name})
 	            .where('number').equals(req.params.topic_number)
 				.execFind(function (arr,data) {
@@ -66,8 +60,6 @@ module.exports = function(models, mongoose) {
   }; 
     models.deleteTopic = function deleteTopic(req, res, next){
     console.log('deleteTopic');
-	res.header("Access-Control-Allow-Origin", "*"); 
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
 	res.send({ topicDelete: 'not implemented'});
   }; 
   

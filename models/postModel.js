@@ -1,17 +1,16 @@
-//post model indexed by user
-module.exports = function(dynasaur) {
-  var PostByUser, post_by_user_schema, color, validate_url;
-  repository_schema = {
-    attributes: {
+//post model
+module.exports = function(models, mongoose) {
+  var Post, PostSchema, color, validate_url;
+  PostSchema = new mongoose.Schema({
       parent: String,
-	  user: Number,
-	  topic: Number,
-	  author: String,
+	  user_id: Number,
+	  topic_id: Number,
       title: String,
-      body: String,
+      text: String,
 	  link: String,
-      createdAt: Number,
-	  updatedAt: Number,
+      createdAt: Date,
+	  updatedAt: Date,
+//
 	  uBlue: Number,
 	  dBlue: Number,
 	  uRed: Number,
@@ -19,16 +18,7 @@ module.exports = function(dynasaur) {
 	  uGreen: Number,
 	  dGreen: Number
     },
-    index: [
-      {
-        type: 'hash',
-        field: 'user'
-      }, {
-        type: 'range',
-        field:  'createdAt'
-      }
-    ]
-  };
+    {collection: 'posts'});
   
   color = function() {
   

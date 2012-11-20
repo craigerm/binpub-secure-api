@@ -56,8 +56,6 @@ module.exports = function(models, mongoose) {
   
   models.getUser = function getUser(req, res, next){
     console.log('getUser');
-	res.header("Access-Control-Allow-Origin", "*"); 
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
     models.User.find({ name: req.params.username}).execFind(function (arr,data) {
       console.log('finding user: '+req.param.username);
 	  console.log(arr);
@@ -68,8 +66,6 @@ module.exports = function(models, mongoose) {
   
   models.modifyUser = function modifyUser(req, res, next){
     console.log('modifyUser');
-	res.header("Access-Control-Allow-Origin", "*"); 
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
     models.User.find({ name: req.params.username}).execFind(function (arr,data) {
       console.log('founduser: '+req.param.username);
 	  console.log(arr);
@@ -83,8 +79,6 @@ module.exports = function(models, mongoose) {
   }; 
     models.deleteUser = function modifyUser(req, res, next){
     console.log('deleteUser');
-	res.header("Access-Control-Allow-Origin", "*"); 
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
 	res.send({ userDelete: 'not implemented'});
   }; 
   validate_url = function() {
