@@ -1,6 +1,6 @@
 {
-  "name": "backbonetutorials",
-  "subdomain": "backbonetutorials",
+  "name": "binpubAPI",
+  "subdomain": "binpub secure API",
   "scripts": {
     "start": "server.js"
   },
