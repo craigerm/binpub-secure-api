@@ -14,8 +14,6 @@ module.exports = function(models, mongoose){
     // Resitify currently has a bug which doesn't allow you to set default headers
     // This headers comply with CORS and allow us to server our response to any origin
     console.log('getMessages1');
-    res.header("Access-Control-Allow-Origin", "*"); 
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
     models.Message.find().limit(20).sort('date', -1).execFind(function (arr,data) {
       console.log('finding');
 	  console.log(arr);
@@ -26,8 +24,6 @@ module.exports = function(models, mongoose){
 
   models.postMessage = function postMessage(req, res, next) {
     console.log('postMessage1');
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
     // Create a new message model, fill it up and save it to Mongodb
     var message = new models.Message(); 
     message.message = req.params.message;
