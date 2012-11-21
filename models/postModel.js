@@ -4,6 +4,7 @@ module.exports = function(models, mongoose) {
   PostSchema = new mongoose.Schema({
       post_id: String,
       parent: String,
+	  repo_id: String,
 	  user_id: Number,
 	  topic_id: Number,
       title: String,
@@ -61,6 +62,21 @@ module.exports = function(models, mongoose) {
   
   };
   
+  models.createPost = function createPost(req, res, next) {
+    console.log('create post');
+    var post = new models.Post();
+    post.user_id = req.params.username;
+    post.repo_id = req.params.repo_name;
+    post.topic_id = req.params.topic_number;	
+    post.text = req.body.text;
+	post.title = req.body.title;
+    post.createdAt = new Date();
+	post.updatedAt = new Date();
+    post.save(function () {
+      console.log('post save');
+      res.send(req.body);
+    });
+  };
   
   
   models.deletePost = function deletePost(req, res, next){

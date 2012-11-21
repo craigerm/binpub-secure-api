@@ -22,8 +22,8 @@ module.exports = function(models, mongoose){
     });
   }
 
-  models.postMessage = function postMessage(req, res, next) {
-    console.log('postMessage1');
+  models.createMessage = function createMessage(req, res, next) {
+    console.log('createMessage1');
     // Create a new message model, fill it up and save it to Mongodb
     var message = new models.Message(); 
     message.message = req.params.message;

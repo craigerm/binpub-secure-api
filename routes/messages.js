@@ -1,1 +1,1 @@
-// routes for messages object.module.exports = function(server, models) {// Get user data v0.1 GET /users/:username  server.get('/messages', models.getMessages);  server.post('/messages', models.postMessage);return server}
+// routes for messages object.module.exports = function(server, models) {// Get user message v0.1.1 GET /users/:username/message  server.get('/users/:username/message', models.getMessages);// create user message v0.1.1 POST /users/:username/message   server.post('/users/:username/message', models.createMessage);return server}

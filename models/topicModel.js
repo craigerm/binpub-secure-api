@@ -58,10 +58,13 @@ module.exports = function(models, mongoose) {
                 });
 
   }; 
-    models.deleteTopic = function deleteTopic(req, res, next){
+  models.deleteTopic = function deleteTopic(req, res, next){
     console.log('deleteTopic');
 	res.send({ topicDelete: 'not implemented'});
-  }; 
+  };
+  models.createTopic = function createTopic(req, res, next){
+    console.log('createTopic');
+ };  
   
   validate_url = function() {
   
