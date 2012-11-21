@@ -44,8 +44,8 @@ module.exports = function(models, mongoose) {
 //  heap_id and deputy_id are products of neighborhood algorithm which defines user positions in neighborhood.
       previous_heap_id: Number,
       heap_id: Number,
-	  previous_deputy_id: Number
-	  deputy_id: Number,
+	  previous_deputy_id: Number,
+	  deputy_id: Number
     }, 
 	{collection: 'users'});
 

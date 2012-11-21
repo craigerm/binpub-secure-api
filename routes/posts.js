@@ -2,7 +2,7 @@
 module.exports = function (server, models) {
 
 //list user post v0.1.1 GET /users/:username/posts/
-  server.get('/users/:username/posts/', models.lostPostsByUser);
+  server.get('/users/:username/posts/', models.listPostsByUser);
 //list topics post v0.1 GET /users/:username/repos/:repo_name/topics/:topic_number/posts/
   server.get('/users/:username/repos/:repo_name/topics/:topic_number/posts/', models.listPostsByParent);
 //create new post v0.1 POST /users/:username/repos/:repo_name/topics/:topic_number/posts/

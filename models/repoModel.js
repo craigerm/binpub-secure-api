@@ -18,7 +18,7 @@ module.exports = function(models, mongoose) {
 	  uGreen: Number,
 	  dGreen: Number
     },
-	{ collection, 'repos'});
+	{ collection: 'repos'});
 	
   RepositorySchema.index({'user_id': 1});
 

@@ -47,7 +47,7 @@ module.exports = function(models, mongoose) {
     });
   };
   models.getTopicData = function getTopicData(req, res, next){
-    console.log('modifyUser');
+    console.log('getTopicsData');
     models.Topic.find({ repo_id: req.params.repo_name})
 	            .where('number').equals(req.params.topic_number)
 				.execFind(function (arr,data) {
@@ -57,7 +57,10 @@ module.exports = function(models, mongoose) {
                   res.send(data);
                 });
 
-  }; 
+  };
+  models.modifyTopic = function modifyTopic(req, res, next){
+    console.log('modify topic')
+  };
   models.deleteTopic = function deleteTopic(req, res, next){
     console.log('deleteTopic');
 	res.send({ topicDelete: 'not implemented'});
