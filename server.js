@@ -16,9 +16,11 @@ mongoose.connection.on('open', function(){
   var fs = require('fs')
     , util = require('util')
     , routes = require('./routes/routes')
+	, auth = require('./auth/auth')
 	, models = require('./models/models')(mongoose)
     , url_prefix = 'https://www.binpub.com';
-  
+
+
   var https_options = {
     key: fs.readFileSync('../signs/s3.key'),
     certificate: fs.readFileSync('../signs/binpub.com.crt')
@@ -32,28 +34,15 @@ mongoose.connection.on('open', function(){
 
 
 // Set up our routes and start the server
-https_server = routes(https_server,  models);
+
 https_server.use(function setDefaultHeaders(req, res, next){
 	res.header("Access-Control-Allow-Origin", "*"); 
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
+	next();
 });
-/*
-https_server.use(function authenticate(req, res, next) {
 
-See https://github.com/jed/cookies  https://github.com/jed/keygrip
-
-Todo session cache lookup ?Something like this? but it may or not be applied for different routes.
-    myPretendCacheClient.lookup(req.headers.cookie, function (err, res) {
-        if (err) return next(err);
-
-        if (res.key !== req.authorization.basic.key)
-            return next(new restify.NotAuthorizedError());
-
-        return next();
-    });
-
-});
-*/
+https_server.use(auth.authenticate);
+https_server = routes(https_server,  models);   
   https_server.listen(443, function() {
     console.log('%s listening at %s, love & peace', https_server.name, https_server.url_prefix);
   });

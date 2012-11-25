@@ -1,4 +1,35 @@
 var passport = require('passport');
+var session = require('./session');
+var Step = require('step');
+var keys = require('keygrip')();
+var Cookies = require('cookies');
+
+exports.authenticate = function authenticate(req, res, next) {
+  var cookies = new Cookies(req, res, keys);
+  console.log('AUTHENTICATE');
+  console.log(req.url);
+  
+  if(/github_callback/.test(req.url)){
+    console.log('GITHUB CALLBACK');
+    var userData = {};
+	userData.date = new Date();
+	userData.GH = req.params.code;
+	Step(
+	  function findOrCreate(){
+	    console.log(userData);
+        session.findOrCreateUser(userData, this);
+	},
+	  function setCookie(){
+	    console.log('set cookie');
+		next();
+	});
+  }
+  
+  else { next(); }
+}
+
+
+
 
 exports.stampPassport = function stampPassport() {
   passport.serializeUser(function(user, done) {
@@ -37,12 +68,8 @@ gh_callback_handler2 = function(req, res) {
     console.log('we b log in agin!');
 	console.dir(req.user.displayName);
 	//be sure to send a response
-	res.send('Welcome  to you again ' + req.user.displayName);
+	res.send(req.user);
 }
-
-
-
-
 // Use the GitHubStrategy within Passport.
 //   Strategies in Passport require a `verify` function, which accept
 //   credentials (in this case, an accessToken, refreshToken, and GitHub
