@@ -7,8 +7,8 @@ var Step = require('step');
 
 exports.findOrCreateUser = function findOrCreateUser(userData, next){
     console.log('findOrCreateUser');
-	if (userData.GH){
-		var userKey = "GHToken:" + userData.GH;
+	if (userData.provider === 'github'){
+		var userKey = "GHid:" + userData.id;
 		console.log("Attempting to get GitHub User: " + userKey);
 		Step(
 			function tryToFindUser() {
@@ -20,7 +20,7 @@ exports.findOrCreateUser = function findOrCreateUser(userData, next){
 			    console.log('orCreateUser');
 				if (err) throw err;
 				if (!reply) {
-					console.log("User not found, creating new GitHub user: " +userData.GH);
+					console.log("User not found, creating new GitHub user: " +userData.id);
 					exports.createUser(userData, this);
 				} else {
 					console.log("User Found, updating GitHub User: " + reply);
@@ -41,7 +41,7 @@ exports.findOrCreateUser = function findOrCreateUser(userData, next){
 };
 
 exports.createUser = function createUser(userData, next) {
-	var userKey = "GHToken:" + userData.GH;
+	var userKey = "GHid:" + userData.id;
 	console.log("Creating new GitHub user: " + userKey);
 	Step (
 		function updateRedisStore () {
@@ -55,11 +55,11 @@ exports.createUser = function createUser(userData, next) {
 };
 
 exports.updateUser = function updateUser(userData, next) {
-	var userKey = "GHToken:" + userData.GH;
+	var userKey = "GHid:" + userData.id;
 	console.log("Updating user: " + userKey);
 	Step (
 		function updateRedisStore () {
-			client.set(userKey, userData[1], this);
+			client.set(userKey, userData.info, this);
 		},
 		function finishThis(err, reply) {
 			if (err) throw err;

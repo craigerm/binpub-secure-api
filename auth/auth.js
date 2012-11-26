@@ -3,30 +3,21 @@ var session = require('./session');
 var Step = require('step');
 var keys = require('keygrip')();
 var Cookies = require('cookies');
+var encryption = require('./encryption');
 
 exports.authenticate = function authenticate(req, res, next) {
   var cookies = new Cookies(req, res, keys);
+  var credentials = cookies.get('credentials', {signed: true});
   console.log('AUTHENTICATE');
-  console.log(req.url);
+  console.log(credentials);
   
-  if(/github_callback/.test(req.url)){
-    console.log('GITHUB CALLBACK');
-    var userData = {};
-	userData.date = new Date();
-	userData.GH = req.params.code;
-	Step(
-	  function findOrCreate(){
-	    console.log(userData);
-        session.findOrCreateUser(userData, this);
-	},
-	  function setCookie(){
-	    console.log('set cookie');
-		next();
-	});
+  if (credentials != undefined) {
+    req.credentials = JSON.parse(credentials);
+	next();
+  } else{
+     next(); 
   }
-  
-  else { next(); }
-}
+};
 
 
 
@@ -54,21 +45,36 @@ module.exports.setup =  function(app) {
 
   app.use(passport.initialize());
   console.log('passport initialized');
-// Passport session setup.
-//   To support persistent login sessions, Passport needs to be able to
-//   serialize users into and deserialize users out of the session.  Typically,
-//   this will be as simple as storing the user ID when serializing, and finding
-//   the user by ID when deserializing.  However, since this example does not
-//   have a database of user records, the complete GitHub profile is serialized
-//   and deserialized.
 
-gh_handler = passport.authenticate('github');
+gh_handler = passport.authenticate('github', { session: false });
 
 gh_callback_handler2 = function(req, res) {
+      res.cookies = new Cookies(req, res, keys);
+      console.log('GITHUB CALLBACK');
+	  console.log(req.user);
+      var userData = {};
+	  userData.date = new Date();
+	  userData.id = req.user.id;
+	  userData.username = req.user.username;
+	  userData.provider = 'github';
+	  userData.hash = encryption.hash('password');
+	  Step(
+	    function findOrCreate(){
+	      console.log(userData);
+          session.findOrCreateUser(userData, this);
+	  },
+	    function setCookie(err, reply){
+		  if (err) throw err;
+	      console.log('set cookie');
+		  cookies.set('credentials', JSON.stringify(userData.hash)); 
+		  console.log(reply);
+		  res.send(req.user);
+	  });
+
     console.log('we b log in agin!');
 	console.dir(req.user.displayName);
 	//be sure to send a response
-	res.send(req.user);
+
 }
 // Use the GitHubStrategy within Passport.
 //   Strategies in Passport require a `verify` function, which accept
