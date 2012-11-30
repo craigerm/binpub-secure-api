@@ -6,8 +6,6 @@ module.exports.index = function(username, req, res, next){
   return next(repos);
 };
 module.exports.show = function(username, repoid, req, res, next){
-  console.log('USERNAME: %s', username);
-  console.log('REPOID: %s', repoid);
   var data = {name: repoid, owner: username, id: 1000};
   return next(data);
 };
