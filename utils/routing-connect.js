@@ -8,7 +8,7 @@ var mappings = [
   { route: '/', action: 'create', verb: 'post' },
   { route: '/:id', action: 'show', verb: 'get' },
   { route: '/:id', action: 'update', verb: 'put' },
-  { route: '/:id', action: 'destroy' ,verb :'delete' }
+  { route: '/:id', action: 'destroy' ,verb :'del' }
 ];
 
 // Some good info here about what error codes to return:
@@ -17,7 +17,7 @@ var verbStatusCodes = {
   'get': 200,
   'post': 201,
   'put': 204, 
-  'delete': 204
+  'del': 204
 };
 
 module.exports = function(app, controllerPath) {
@@ -86,11 +86,11 @@ module.exports = function(app, controllerPath) {
       // now.
       // TODO: Error handling
       var nextMethod = function(data){        
+        var code = verbStatusCodes[verb];
         if(data){
-          var code = verbStatusCodes[verb];
           res.send(code, data);
         } else {
-          res.send(201, '');
+          res.send(code);                 
         }
         return next();
       };
@@ -110,13 +110,13 @@ module.exports = function(app, controllerPath) {
 		get: function(route, resource) {
 			var info = getInfoFromResource(resource);
 			var route = '/' + route;
-    //  app.get(route, info.middleware, info.action);
+      throw new Error('This needs to be migrated to work with RESTify');
 		},
 
 		post: function(route, resource) {
 			var info = getInfoFromResource(resource);
 			var route = '/' + route;
-			//app.post(route, info.action);
+      throw new Error('This needs to migrated to work with RESTify');
 		},
 
 		root: function(resource) {
@@ -132,10 +132,8 @@ module.exports = function(app, controllerPath) {
 
 				var mapping = mappings[i];
 				var action = mapping.action;
-        if(controller[action] === undefined){
-          console.log('Skipping %s/%s', controllerName, action);
-        }
-				if (controller[action] !== undefined) {
+
+        if (controller[action] !== undefined) {
 					var routeName = '/' + controllerName;
           var lastPartOfRoute = mapping.route || action;
           routeName += lastPartOfRoute[0] == '/' ? '' : '/';
@@ -143,6 +141,7 @@ module.exports = function(app, controllerPath) {
 
           // This sets the method correctly on the app server
           var routeHandler = createRouteMethod(mapping.verb, controller[action]);
+          console.log('Adding %s to route %s', mapping.verb, routeName);
           app[mapping.verb].call(app, routeName, routeHandler); 
          // addParamsForController(controllerName, controller); 
 				}
