@@ -2,11 +2,11 @@ var server = require('../server')
   , request = require('supertest');
 
 describe('auth routes', function(){
-  describe('github', function(){
-    it('should do something', function(done){
+  describe('GET /auth/github', function(){
+    it('should redirect to github login', function(done){
       request(server)
         .get('/auth/github')
-        .expect(200, done);
+        .expect(302, done);
     });
   });
 });

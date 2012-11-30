@@ -3,27 +3,27 @@ var server = require('../server')
   , util = require('util');
 
 describe('user routes', function(){
-  describe('GET /users/:id', function(){
+  describe('GET /v1/users/:id', function(){
     it('should respond with 200', function(done){
       request(server)
-        .get('/users/craigerm')
+        .get('/v1/users/craigerm')
         .expect('Content-Type', /json/)
         .expect(200, done);
    });
   });
 
-  describe('PUT /users/:id', function(){
+  describe('PUT /v1/users/:id', function(){
     it('should respond with 204', function(done){
       request(server)
-        .put('/users/craigerm')        
+        .put('/v1/users/craigerm')        
         .expect(204, done);
     });
   });
 
-  describe('DELETE /users/:id', function(){
+  describe('DELETE /v1/users/:id', function(){
     it('should respond with 204', function(done){
       request(server)
-        .del('/users/craigerm')
+        .del('/v1/users/craigerm')
         .expect(204, done);
     });
   });

@@ -11,6 +11,11 @@ var mongoose = require('mongoose');
 var config = require('./config/application.js');
 var connected = false;
 
+var passport = require('passport');
+
+// Global server object (no var)
+app = null;
+
 mongoose.connect(config.creds.mongoose_auth);
 
 //mongoose.connection.on('open', function(){
@@ -18,7 +23,7 @@ mongoose.connect(config.creds.mongoose_auth);
   connected = true;
   var fs = require('fs')
     , util = require('util')
-  	, auth = require('./auth/auth')
+  //	, auth = require('./auth/auth')
 	  , models = require('./models/models')(mongoose)
     , url_prefix = config.url_prefix;
 
@@ -31,12 +36,15 @@ mongoose.connect(config.creds.mongoose_auth);
 
   // require restify and bodyParser to read Backbone.js syncs
   var restify = require('restify');  
-  var server = restify.createServer(server_options);
-  server.url_prefix = url_prefix;
-  server.use(restify.queryParser());
+  app = restify.createServer(server_options);
+
+  // The url must have the port becasue it must match the oauth callback
+  app.url_prefix = url_prefix + (config.port ? ':' + config.port : '');
+  app.use(restify.queryParser());
+  app.use(passport.initialize());
 
   // Set up our routes and start the server
-  server.use(function setDefaultHeaders(req, res, next){
+  app.use(function setDefaultHeaders(req, res, next){
     res.header("Access-Control-Allow-Origin", "*"); 
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     next();
@@ -46,20 +54,22 @@ mongoose.connect(config.creds.mongoose_auth);
   var port = config.port || (config.https === true ? 443 : 3000);
 
   // Authenticate
-  server.use(auth.authenticate);
+//  app.use(auth.authenticate);
 
   // Configure all the routes
-  require('./config/routes')(server);
+  require('./config/routes')(app);
 
-  //server = routes(server,  models);   
-  server.listen(port, function() {
-    console.log('%s listening at %s:%s, love & peace', server.name, server.url_prefix, port);
+  require('./controllers/auth-github-controller');
+
+  //app = routes(app,  models);   
+  app.listen(port, function() {
+    console.log('%s listening at %s, love & peace', app.name, app.url_prefix);
   });
 
 //});
 
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 
-// export the server
-module.exports = server;
+// export the app
+module.exports = app;
 

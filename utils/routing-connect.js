@@ -93,6 +93,15 @@ module.exports = function(app, controllerPath) {
     };
   };
 
+  // Naive solution
+  // If ends with an S remove it
+  function singularize(name){
+    if(name[name.length - 1] == 's'){
+      return name.substring(0, name.length - 1);
+    }
+    return name;
+  };
+
   // This adds the correct routing call to the app
   function addRoutingCall(app, verb, route, resource){
       var info = getInfoFromResource(resource);
@@ -104,6 +113,26 @@ module.exports = function(app, controllerPath) {
   // This is the routing map object that gets returned as the export.
   // User's work with this to define resources.
 	var map = {
+
+    // Namespacing nad nested routing is working, but the implementation can be
+    // simplified and cleaned up.
+    namespace: function(namespace, handler){
+      var self = this;
+      var mapStub = {
+        resources: function(name, nestedHandler){
+          self.resources(name, namespace);
+          var parentRouteName = singularize(name) + 'id';
+          var parentRoute = namespace + '/' + name + '/:' + parentRouteName;
+          var nestedMap = {
+            resources: function(nestedName){
+              self.resources(nestedName, parentRoute);
+            }
+          };
+          nestedHandler.call(nestedMap);
+        }
+      };
+      handler.call(mapStub);
+    },
 
 		get: function(route, resource) {
       addRoutingCall(app, 'get', route, resource);
@@ -125,7 +154,7 @@ module.exports = function(app, controllerPath) {
       this.get('', resource);
 		},
 
-		resources: function(controllerName) {
+		resources: function(controllerName, prefix) {
 			var file = process.cwd() + '/controllers/' + controllerName + '-controller';
 
 			var controller = require(file);
@@ -135,13 +164,27 @@ module.exports = function(app, controllerPath) {
 				var action = mapping.action;
 
         if (controller[action] !== undefined) {
-					var routeName = '/' + controllerName;
+					var routeName = prefix ? '/' + prefix : '';
+          routeName += '/' + controllerName;
           var lastPartOfRoute = mapping.route || action;
+
+          // If we have a prefix we should change it to the singular name to
+          // avoid conflicts
+          if(lastPartOfRoute == '/:id' && prefix){
+            lastPartOfRoute = '/:' + singularize(controllerName) + 'id';
+          }
           routeName += lastPartOfRoute[0] == '/' ? '' : '/';
           routeName += lastPartOfRoute === '/' ? '' : lastPartOfRoute;
 
           // This sets the method correctly on the app server
           var routeHandler = createRouteMethod(mapping.verb, controller[action]);
+
+          console.log('registering %s:\t %s (%s => %s)', 
+              mapping.verb.toUpperCase(), 
+              routeName,
+              controllerName,
+              action
+          );
           app[mapping.verb].call(app, routeName, routeHandler); 
 				}
 			}
