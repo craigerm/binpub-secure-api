@@ -10,9 +10,11 @@ binpub.com api is built with node.js restify (http://mcavage.github.com/node-res
 
 ## Running tests
 Make sure the dev dependencies are first installed before running the tests:
+
     $ npm installl
 
 then run the tests:
+
     $ make tests
     
 ## Deploying (only authentication and simple test works now, below is TODO)
