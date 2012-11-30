@@ -8,6 +8,13 @@ Ostio api is built with [Rails](http://rubyonrails.org/).
 
 binpub.com api is built with node.js restify (http://mcavage.github.com/node-restify/)
 
+## Running tests
+Make sure the dev dependencies are first installed before running the tests:
+    $ npm installl
+
+then run the tests:
+    $ make tests
+    
 ## Deploying (only authentication and simple test works now, below is TODO)
 clone
 TODO: update package.json
