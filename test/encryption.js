@@ -14,6 +14,12 @@ describe('encryption', function(){
       var hash2 = encryption.hash('password');
       hash1.should != hash2;
     });
+
+    it('should genereate same hash for same password', function(){
+      var hash1 = encryption.hash('test123');
+      var hash2 = encryption.hash('test123');
+      hash1.should === hash2;
+    });
   });
 
   describe('validate()', function(){
