@@ -13,6 +13,8 @@ var mappings = [
 
 // Some good info here about what error codes to return:
 // http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
+// TODO: Change this so we return 200 for PUT and DELETE when we return an
+// object. For now we assume we are not returning any data, hence the 204.
 var verbStatusCodes = {
   'get': 200,
   'post': 201,
@@ -21,7 +23,7 @@ var verbStatusCodes = {
 };
 
 module.exports = function(app, controllerPath) {
-	controllerPath = controllerPath || (process.cwd() + '/app/controllers');
+	controllerPath = controllerPath || (process.cwd() + '/controllers');
 
 	function requireController(controllerName) {
 		var controllerFile = controllerPath + '/' + controllerName + '-controller';
@@ -55,20 +57,6 @@ module.exports = function(app, controllerPath) {
 			action: action,
 		};
 	}
-
-  var controllerParamsProcessed = {};
-
-  function addParamsForController(controllerName, controller){
-
-    //if(controllerParamsProcessed[controllerName] == undefined){
-    //  for(var i=0; i < controller._params.length; i++){
-    //    var param = controller._params[i];
-    //    console.log('Setting param %s for controller %s', param.name, controllerName);
-    //    app.param(param.name, param.fn);
-    //  }
-    //  controllerParamsProcessed[controllerName] = true;
-    //}
-  }
 
   // This function wil wrap the call from RESTify to the controller method.
   // It's basic right now but we will expand it.
@@ -105,26 +93,39 @@ module.exports = function(app, controllerPath) {
     };
   };
 
+  // This adds the correct routing call to the app
+  function addRoutingCall(app, verb, route, resource){
+      var info = getInfoFromResource(resource);
+      var route = '/' + route;
+      var routeHandler = createRouteMethod(verb, info.action);
+      app[verb].call(app, route, routeHandler);
+  };
+
+  // This is the routing map object that gets returned as the export.
+  // User's work with this to define resources.
 	var map = {
 
 		get: function(route, resource) {
-			var info = getInfoFromResource(resource);
-			var route = '/' + route;
-      throw new Error('This needs to be migrated to work with RESTify');
-		},
+      addRoutingCall(app, 'get', route, resource);
+    },
 
 		post: function(route, resource) {
-			var info = getInfoFromResource(resource);
-			var route = '/' + route;
-      throw new Error('This needs to migrated to work with RESTify');
+      addRoutingCall(app, 'post', route, resource);        
 		},
+
+    put: function(route, resource) {
+      addRoutingCall(app, 'put', route, resource);
+    },
+
+    del: function(route, resource){
+      addRoutingCall(app, 'del', route, resource);
+    },
 
 		root: function(resource) {
       this.get('', resource);
 		},
 
 		resources: function(controllerName) {
-      console.log('Creating resource for %s', controllerName);
 			var file = process.cwd() + '/controllers/' + controllerName + '-controller';
 
 			var controller = require(file);
@@ -141,9 +142,7 @@ module.exports = function(app, controllerPath) {
 
           // This sets the method correctly on the app server
           var routeHandler = createRouteMethod(mapping.verb, controller[action]);
-          console.log('Adding %s to route %s', mapping.verb, routeName);
           app[mapping.verb].call(app, routeName, routeHandler); 
-         // addParamsForController(controllerName, controller); 
 				}
 			}
 		}

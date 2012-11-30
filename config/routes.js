@@ -3,4 +3,8 @@ module.exports = function(app){
 
   // Rails like resources
   map.resources('users');
+
+  // Authentication 
+  map.get('auth/github', 'auth#github');
+      
 };
