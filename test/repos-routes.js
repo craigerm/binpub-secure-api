@@ -2,7 +2,7 @@ var server = require('../server')
   , request = require('supertest');
 
 describe('repos routes', function(){
-  describe('GET /v1/users/:id/repos', function(){
+  describe('GET /v1/users/:username/repos', function(){
     it('should return 200 status', function(done){
       request(server)
         .get('/v1/users/craigerm/repos')
@@ -11,7 +11,7 @@ describe('repos routes', function(){
     });
   });
 
-  describe('GET /v1/users/:id/repos/:id', function(){
+  describe('GET /v1/users/:username/repos/:reponame', function(){
     it('should return 200 status', function(done){
         request(server)
           .get('/v1/users/craigerm/repos/binpub')
@@ -19,5 +19,7 @@ describe('repos routes', function(){
           .expect(200, done);
     });
   });
+
+  //TODO: Add test for syncing repositories with github
 
 });
