@@ -12,14 +12,11 @@ describe('repos routes', function(){
   });
 
   describe('GET /v1/users/:username/repos/:reponame', function(){
-    it('should return 200 status', function(done){
+    it('should return 404 status if repo is not found', function(done){
         request(server)
-          .get('/v1/users/craigerm/repos/binpub')
+          .get('/v1/users/craigerm/repos/fakerepo123213')
           .expect('Content-Type', /json/)
-          .expect(200, done);
+          .expect(404, done);
     });
   });
-
-  //TODO: Add test for syncing repositories with github
-
 });

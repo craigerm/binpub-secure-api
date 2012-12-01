@@ -1,7 +1,9 @@
 // This is a utility for adding routing capabilities to a node application.
 // It was originally written to add basic routing support for using express 
 // but this version has been simplified to work with RESTify.
-var util = require('util');
+var util = require('util')
+  , Errors = require('../models/errors')
+  , RecordNotFoundError = Errors.RecordNotFoundError;
 
 var mappings = [
   { route: '/', action: 'index', verb: 'get' },
@@ -74,6 +76,13 @@ module.exports = function(app, controllerPath) {
       // now.
       // TODO: Error handling
       var nextMethod = function(data){        
+
+        // Handle certain errors in a special way
+        if(data instanceof RecordNotFoundError){
+          res.send(404, { message: 'Not founad' });
+          return next();
+        }
+
         var code = verbStatusCodes[verb];
         if(data){
           res.send(code, data);

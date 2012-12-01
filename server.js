@@ -6,70 +6,70 @@ process.on('uncaughtException', function(err) {
   console.log(err.stack);
 });
 
-// Setup mongoose and the database
-var mongoose = require('mongoose');
-var config = require('./config/application.js');
-var connected = false;
+var mongoose = require('mongoose')
+  , config = require('./config/application.js')
+  , passport = require('passport')
+  , fs = require('fs')
+  , util = require('util');
 
-var passport = require('passport');
+var url_prefix = config.url_prefix
+  , connected = false
+  , models = require('./models/models')(mongoose);
 
-// Global server object (no var)
+// These are global variables (probably will clean this up)
 app = null;
+Repo = models.Repo;
 
 mongoose.connect(config.creds.mongoose_auth);
 
-//mongoose.connection.on('open', function(){
+mongoose.connection.on('open', function(){
   console.log("connected to MongoLab");
   connected = true;
-  var fs = require('fs')
-    , util = require('util')
-  //	, auth = require('./auth/auth')
-	  , models = require('./models/models')(mongoose)
-    , url_prefix = config.url_prefix;
+});
 
-  var server_options = {};
 
-  if(config.https === true){
-    server_options.key = fs.readFileSync('../signs/s3.key');
-    server_options.certificate = fs.readFileSync('../signs/binpub.com.crt');
-  }
+var server_options = {};
 
-  // require restify and bodyParser to read Backbone.js syncs
-  var restify = require('restify');  
-  app = restify.createServer(server_options);
+if(config.https === true){
+  server_options.key = fs.readFileSync('../signs/s3.key');
+  server_options.certificate = fs.readFileSync('../signs/binpub.com.crt');
+}
 
-  // The url must have the port becasue it must match the oauth callback
-  app.url_prefix = url_prefix + (config.port ? ':' + config.port : '');
-  app.use(restify.queryParser());
-  app.use(passport.initialize());
+// require restify and bodyParser to read Backbone.js syncs
+var restify = require('restify');  
+app = restify.createServer(server_options);
 
-  // Set up our routes and start the server
-  app.use(function setDefaultHeaders(req, res, next){
-    res.header("Access-Control-Allow-Origin", "*"); 
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    next();
-  });
+// The url must have the port becasue it must match the oauth callback
+app.url_prefix = url_prefix + (config.port ? ':' + config.port : '');
+app.use(restify.queryParser());
+app.use(passport.initialize());
 
-  // Set the port of the default
-  var port = config.port || (config.https === true ? 443 : 3000);
+// Set up our routes and start the server
+app.use(function setDefaultHeaders(req, res, next){
+  res.header("Access-Control-Allow-Origin", "*"); 
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});
 
-  // Authenticate
+// Set the port of the default
+var port = config.port || (config.https === true ? 443 : 3000);
+
+// Authenticate
 //  app.use(auth.authenticate);
 
-  // Configure all the routes
-  require('./config/routes')(app);
+// Configure all the routes
+require('./config/routes')(app);
 
-  require('./controllers/auth-github-controller');
+// Our oAuth controllers
+require('./controllers/auth-github-controller');
 
-  //app = routes(app,  models);   
-  app.listen(port, function() {
-    console.log('%s listening at %s, love & peace', app.name, app.url_prefix);
-  });
-
-//});
+app.listen(port, function() {
+  console.log('%s listening at %s, love & peace', app.name, app.url_prefix);
+});
 
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 
-// export the app
+// export the app (used for testing)
+// Not sure if this is a good idea or not.
 module.exports = app;
 

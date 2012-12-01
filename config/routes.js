@@ -8,6 +8,7 @@ module.exports = function(app){
   map.namespace('v1', function(){    
     this.resources('users', function(){
       this.resources('repos');
+      this.resources('sync_repos');
     });
   });
 
