@@ -79,7 +79,7 @@ module.exports = function(app, controllerPath) {
 
         // Handle certain errors in a special way
         if(data instanceof RecordNotFoundError){
-          res.send(404, { message: 'Not founad' });
+          res.send(404, { message: 'Not Found' });
           return next();
         }
 
