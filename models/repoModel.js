@@ -61,7 +61,6 @@ module.exports = function(models, mongoose){
       // all items are saved and then we execute the callback handler
       repo.save(function(err){
         if(err) return callback(err);
-        console.log('SAVING');
         if(++itemsSaved == data.length){
           callback();
         }
@@ -81,35 +80,11 @@ module.exports = function(models, mongoose){
         if(err) return callback(err);
         self.insertGitHubData(userId, data, callback);
       });
-
-    //// Currently we only insert the data
-    //var itemsSaved = 0;
-
-    //for(var i=0; i < data.length; i++){
-    //  var item = data[i];
-    //  var repo = new this();
-    //  repo.userId = 1;// fix this later
-    //  repo.repoId = item.id;
-    //  repo.title = item.name;
-    //  repo.link = item.html_url;
-    //  repo.createdAt = item.created_at;
-    //  repo.updatedAt = item.updated_at;      
-
-    //  // No bulk insert for mongoose yet so we wait until 
-    //  // all items are saved and then we execute the callback handler
-    //  repo.save(function(err){
-    //    if(err) return callback(err);
-    //    if(++itemsSaved == data.length){
-    //      callback();
-    //    }
-    //  });
-    //}
   };
 
   mongoose.model('Repo', repositorySchema);
   models.Repo = mongoose.model('Repo');
 
-  
   return models;
 };
 
