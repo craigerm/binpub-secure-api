@@ -2,7 +2,7 @@ var secret = require('../secret/secret')
   , encryption = require('../auth/encryption')
   , passport = require('passport')
   , util = require('util')
-  , GitHubStrategy = require('passport-github').Strategy;
+  , GitHubStrategy = require('passport-github').Strategy
 
 var GITHUB_CLIENT_ID = secret.github_client_id;
 var GITHUB_CLIENT_SECRET = secret.github_client_secret;
@@ -29,11 +29,16 @@ passport.use(new GitHubStrategy({
     clientSecret: GITHUB_CLIENT_SECRET,
     callbackURL: GITHUB_CALLBACK_URL,
   },
+
   function(accessToken, refreshToken, profile, done){
     console.log('accessToken=%s, github id=%', accessToken, profile.id);
-  
-    // Example for now: keep entire github profile
-    return done(null, profile);
+    // Not sure what to do for this
+    //
+    // Switch this to use a simpler model instead of the whole profile
+    User.syncGitHubProfile(accessToken, 'asdsad', profile, function(err){
+      console.log('MADE IT? %s', err);
+      return done(err, profile);      
+    });
   }
 ));
 

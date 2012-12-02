@@ -11,5 +11,5 @@ console.log('entering models wrapper');
   models = require('./commitModel')(models, mongoose);
   models = require('./userModel')(models, mongoose);
   
-return models
+  return models
 }

@@ -3,13 +3,22 @@ var server = require('../server')
   , util = require('util');
 
 describe('user routes', function(){
-  describe('GET /v1/users/:id', function(){
-    it('should respond with 200', function(done){
+  describe('GET /v1/users/:username', function(){
+
+    it('should respond with 200 if user found', function(done){
       request(server)
         .get('/v1/users/craigerm')
         .expect('Content-Type', /json/)
         .expect(200, done);
-   });
+    });
+
+    it('should respond with 404 if user not found', function(done) {
+      request(server)
+        .get('/v1/users/vcbvcbvbvcb')
+        .expect('Content-Type', /json/)
+        .expect(404, done);
+    });
+
   });
 
   describe('PUT /v1/users/:id', function(){

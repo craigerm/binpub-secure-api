@@ -19,6 +19,7 @@ var url_prefix = config.url_prefix
 // These are global variables (probably will clean this up)
 app = null;
 Repo = models.Repo;
+User = models.User;
 
 mongoose.connect(config.creds.mongoose_auth);
 
@@ -26,7 +27,6 @@ mongoose.connection.on('open', function(){
   console.log("connected to MongoLab");
   connected = true;
 });
-
 
 var server_options = {};
 

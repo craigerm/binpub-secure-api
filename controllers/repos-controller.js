@@ -10,17 +10,21 @@ var dataHandler = function(next){
 
 // GET /users/:username/repos (list user repos)
 module.exports.index = function(username, req, res, next){
-  var userId = 1; // TEMP
-  Repo.findByUserId(userId, function(err, repos){
+  User.findOneByUsername(username, function(err, user) {
     if(err) return next(err);
-    return next(repos);
+    Repo.findByUserId(user.id, function(err, repos){
+      if(err) return next(err);
+      return next(repos);
+    });
   });
 };
 
 // GET /users/:username/repos/:reponame (get repo data)
 module.exports.show = function(username, reponame, req, res, next){
-  var userId = 1;// temp
-  Repo.findOneByRepoName(userId, reponame, dataHandler(next));
+  User.findOneByUsername(username, function(err, user) {
+    if(err) return next(err);
+    Repo.findOneByRepoName(user.id, reponame, dataHandler(next));
+  });
 };
 
 // POST /users/:username/repos (sync repos with Github)
