@@ -2,9 +2,7 @@ var util = require('util');
 
 // GET /users/:username
 exports.show = function(username, req, res, next){
-  User.findOneByUsername(username, function(err, user) {
-    next(err || user);
- });
+  User.findOneByUsername(username, next); 
 };
 
 // PUT /users/:username
