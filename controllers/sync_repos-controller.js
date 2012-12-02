@@ -1,25 +1,13 @@
-var restify = require('restify')
-  , util = require('util');
+var GitHubApi = require('../lib/githubapi');
 
 // POST /v1/users/:username/sync_repos
-module.exports.index = function(username, req, res, next){
-
-  var client = restify.createJsonClient({
-    url: 'https://api.github.com'
-  });
-
-  var getRepoPath = util.format('/users/%s/repos', username);
-
-  client.get(getRepoPath, function(err, req, res, obj){
-    if(err){
+module.exports.create = function(username, req, res, next){
+  var userId = 1; // need to fix this
+  GitHubApi.getReposByUser(username, function(err, data) {
+    if(err) {
       return next(err);
     }
-    console.log('Github returned %s objects', obj.length);
-    Repo.syncGitHubData(obj, function(err){
-      console.log('WHAT?');
-      if(err)
-        return next(err);
-      return next();
-    });
+    Repo.syncGitHubData(userId, data, next);
   });
 };
+

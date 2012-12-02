@@ -95,9 +95,6 @@ module.exports = function(app, controllerPath) {
       args.push(res);
       args.push(nextMethod);
 
-      // TODO: Add generic content negotiation here
-      // Right now it looks like restify does everything in JSON by default, so
-      // that's good.
       return controllerMethod.apply(controllerMethod, args);
     };
   };

@@ -8,7 +8,7 @@ var dataHandler = function(next){
   }
 };
 
-// GET /v1/users/:username/repos (list user repos)
+// GET /users/:username/repos (list user repos)
 module.exports.index = function(username, req, res, next){
   var userId = 1; // TEMP
   Repo.findByUserId(userId, function(err, repos){
@@ -17,14 +17,14 @@ module.exports.index = function(username, req, res, next){
   });
 };
 
-// GET /v1/users/:username/repos/:reponame (get repo data)
+// GET /users/:username/repos/:reponame (get repo data)
 module.exports.show = function(username, reponame, req, res, next){
   var userId = 1;// temp
   Repo.findOneByRepoName(userId, reponame, dataHandler(next));
 };
 
-// POST /v1/users/:id/repos (sync repos with Github)
-module.exports.create = function(req, res, next){
-  return next();
+// POST /users/:username/repos (sync repos with Github)
+module.exports.create = function(username, req, res, next){  
+  return next(new Error('Not implemented yet'));
 };
 

@@ -42,9 +42,7 @@ module.exports = function(models, mongoose){
 
   // I think it might be best to split the schema and business logic methods
   // into seperate files
-  // This will create, delete or update the github data in our system to the
-  // current github state.
-  repositorySchema.statics.syncGitHubData = function(data, callback){
+  repositorySchema.statics.insertGitHubData = function(userId, data, callback) {
 
     // Currently we only insert the data
     var itemsSaved = 0;
@@ -52,7 +50,7 @@ module.exports = function(models, mongoose){
     for(var i=0; i < data.length; i++){
       var item = data[i];
       var repo = new this();
-      repo.userId = 1;// fix this later
+      repo.userId = userId;
       repo.repoId = item.id;
       repo.title = item.name;
       repo.link = item.html_url;
@@ -63,11 +61,49 @@ module.exports = function(models, mongoose){
       // all items are saved and then we execute the callback handler
       repo.save(function(err){
         if(err) return callback(err);
+        console.log('SAVING');
         if(++itemsSaved == data.length){
           callback();
         }
       });
-    }
+    };
+  };
+
+  // This will create, delete or update the github data in our system to the
+  // current github state.
+  repositorySchema.statics.syncGitHubData = function(userId, data, callback){
+    var self = this;
+    // First delete all repositories for this user and then inserts them again.
+    self 
+      .where('userId')
+      .equals(userId)
+      .remove(function(err) {
+        if(err) return callback(err);
+        self.insertGitHubData(userId, data, callback);
+      });
+
+    //// Currently we only insert the data
+    //var itemsSaved = 0;
+
+    //for(var i=0; i < data.length; i++){
+    //  var item = data[i];
+    //  var repo = new this();
+    //  repo.userId = 1;// fix this later
+    //  repo.repoId = item.id;
+    //  repo.title = item.name;
+    //  repo.link = item.html_url;
+    //  repo.createdAt = item.created_at;
+    //  repo.updatedAt = item.updated_at;      
+
+    //  // No bulk insert for mongoose yet so we wait until 
+    //  // all items are saved and then we execute the callback handler
+    //  repo.save(function(err){
+    //    if(err) return callback(err);
+    //    if(++itemsSaved == data.length){
+    //      callback();
+    //    }
+    //  });
+    //}
   };
 
   mongoose.model('Repo', repositorySchema);
