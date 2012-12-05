@@ -21,5 +21,12 @@ var RecordNotFoundError = function(msg) {
 util.inherits(RecordNotFoundError, AbstractError);
 RecordNotFoundError.prototype.message = 'Record Not Found';
 
+var NotAuthorizedError = function(msg) { 
+  NotAuthorizedError.super_.call(this, msg, this.constructor);
+};
+
+util.inherits(NotAuthorizedError, AbstractError);
+NotAuthorizedError.prototype.message = 'Not Authorized';
+
 // Export all our custom errors
 module.exports.RecordNotFoundError = RecordNotFoundError;

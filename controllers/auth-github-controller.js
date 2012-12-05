@@ -1,6 +1,7 @@
 var secret = require('../secret/secret')
   , encryption = require('../auth/encryption')
   , passport = require('passport')
+  , session = require('../auth/session')
   , util = require('util')
   , GitHubStrategy = require('passport-github').Strategy
 
@@ -8,13 +9,6 @@ var GITHUB_CLIENT_ID = secret.github_client_id;
 var GITHUB_CLIENT_SECRET = secret.github_client_secret;
 var GITHUB_CALLBACK_URL = app.url_prefix + '/auth/github/callback';
 var GITHUB_LOGIN_URL = app.url_prefix + '/auth/github';
-
-// We want to authenticate the github and callback events
-// (THIS IS NOT IMPLEMENTED YET. It is working for express but not for restify
-// yet.)
-module.exports.before = [
-  { method: passport.authenticate('github'), only: ['github', 'callback'] }
-];
 
 passport.serializeUser(function(user, done) {
   done(null, user);
@@ -31,13 +25,15 @@ passport.use(new GitHubStrategy({
   },
 
   function(accessToken, refreshToken, profile, done){
-    console.log('accessToken=%s, github id=%', accessToken, profile.id);
-    // Not sure what to do for this
-    //
     // Switch this to use a simpler model instead of the whole profile
-    User.syncGitHubProfile(accessToken, 'asdsad', profile, function(err){
-      console.log('MADE IT? %s', err);
-      return done(err, profile);      
+    User.syncGitHubProfile(profile, function(err){
+      var user = {
+        id: profile.id, 
+        username: profile.username,
+        accessToken: accessToken
+      };
+      session.addUser(accessToken, user);
+      return done(err, user);      
     });
   }
 ));
@@ -48,16 +44,18 @@ app.get('/auth/github', passport.authenticate('github'));
 app.get('/auth/github/callback', 
     passport.authenticate('github'),
     function(req, res, next){
-      // Now that we are authenticated
-      // we need to save the details into the user table
-      // and create a session.
-      res.send(200);
+      var redirectUrl = util.format(
+        '/auth-callback?login=%s&accessToken=%s',
+        req.user.username,
+        req.user.accessToken);
+      res.header('Location', redirectUrl);
+      res.send(302);
       return next();
     }
 );
 
-module.exports.auth = passport.authenticate('github');
+app.get('/auth-callback', function(req, res, next) {
+    res.send(200);
+    next();
+});
 
-module.exports.callback = function(req, res, next){
-  return next();
-};

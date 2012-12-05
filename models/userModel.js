@@ -5,7 +5,9 @@ module.exports = function(models, mongoose) {
   var UserSchema = new mongoose.Schema({
     githubId: Number,
     username: String,
-    authentication_token: String,
+    // I dont think we should be saving the tokens
+    //in the DB. We store it in Redis is authenticated
+    //authentication_token: String,
     name: String,
     email: String,
     profileUrl: String,
@@ -14,7 +16,7 @@ module.exports = function(models, mongoose) {
     avatarUrl: String,
     type: { type: String }, // Type has special meaning. See mongoose docs for more info
     location: String,
-    githubToken: String,
+    //githubToken: String,
     createdAt: Date,
     updatedAt: Date,
     uBlueFor: Number,
@@ -64,6 +66,19 @@ module.exports = function(models, mongoose) {
       });
   };
 
+  // Deletes a user and related repos by the username
+  UserSchema.statics.removeByUsername = function(username, callback) {
+    this.findOne({ username: username}, function(err, user) {
+      if(err) return callback(err);
+      if(!user) return callback(new RecordNotFoundError());
+
+      // Delete repositories with user
+//      user.remove(function(){
+        
+//      });
+    });
+  };
+
   // Find the user by the username
   UserSchema.statics.findOneByUsername = function(username, callback) {
     this.findOne({ username: username}, function(err, user) {
@@ -101,16 +116,13 @@ module.exports = function(models, mongoose) {
 
   // This will sync the github profile to our database and set the login tokens
   // etc.
-  UserSchema.statics.syncGitHubProfile = function(authenticationToken, githubToken, profile, callback) {
+  UserSchema.statics.syncGitHubProfile = function(profile, callback) {
 
     // Passport profile is generic but includes the provider specific (in this
     // case github) data
     var data = profile._json;
 
-    // The user data is just a list of changes that we want to insert
     var user =  {};
-    user.githubToken = githubToken;
-    user.authentication_token = authenticationToken;
     user.githubId = profile.id;
     user.username = profile.username;
     user.name = profile.displayName;
@@ -130,17 +142,11 @@ module.exports = function(models, mongoose) {
 
     // We create the user account if it doesn't exist or update it if it does
     this.update({ githubId: profile.id }, user, options, function(err, numberAffected, user){
-      if(err){
-        callback(err);
-      } else {
-        callback();
-      }
-    });
+      callback(err, user);
+   });
   };
 
-  mongoose.model('User', UserSchema);
-  models.User = mongoose.model('User');
- 
+  models.User = mongoose.model('User', UserSchema);
   return models;
 };
 

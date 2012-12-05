@@ -9,6 +9,7 @@ process.on('uncaughtException', function(err) {
 var mongoose = require('mongoose')
   , config = require('./config/application.js')
   , passport = require('passport')
+  , permissionCheck = require('./auth/permissionCheck')
   , fs = require('fs')
   , util = require('util');
 
@@ -44,6 +45,9 @@ app.url_prefix = url_prefix + (config.port ? ':' + config.port : '');
 app.use(restify.queryParser());
 app.use(passport.initialize());
 
+// On every request we check the authentication
+app.use(permissionCheck);
+
 // Set up our routes and start the server
 app.use(function setDefaultHeaders(req, res, next){
   res.header("Access-Control-Allow-Origin", "*"); 
@@ -54,12 +58,9 @@ app.use(function setDefaultHeaders(req, res, next){
 // Set the port of the default
 var port = config.port || (config.https === true ? 443 : 3000);
 
-// Authenticate
-//  app.use(auth.authenticate);
-
 // Configure all the routes
 require('./config/routes')(app);
-
+   
 // Our oAuth controllers
 require('./controllers/auth-github-controller');
 
