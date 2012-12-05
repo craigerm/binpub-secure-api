@@ -22,18 +22,18 @@ describe('user routes', function(){
   });
 
   describe('PUT /v1/users/:id', function(){
-    it('should respond with 204', function(done){
+    it('should be unauthorized if no access token', function(done){
       request(server)
         .put('/v1/users/craigerm')        
-        .expect(204, done);
+        .expect(401, done);
     });
   });
 
   describe('DELETE /v1/users/:id', function(){
-    it('should respond with 204', function(done){
+    it('should be unauthroized if no access token', function(done){
       request(server)
         .del('/v1/users/craigerm')
-        .expect(204, done);
+        .expect(401, done);
     });
   });
 });

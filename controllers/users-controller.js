@@ -7,10 +7,10 @@ exports.show = function(username, req, res, next){
 
 // PUT /users/:username
 exports.update = function(username, req, res, next){
-  return next();
+  next();
 };
 
 // DELETE /users/:username
 exports.destroy = function(username, req, res, next){
-  return next();
+  next();
 };
