@@ -2,7 +2,6 @@ var GitHubApi = require('../lib/githubapi');
 
 // POST /v1/users/:username/sync_repos
 module.exports.create = function(username, req, res, next) {
-
   User.findOneByUsername(username, function(err, user) {
     if(err) throw err; 
 

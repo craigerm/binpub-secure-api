@@ -40,9 +40,7 @@ module.exports = function(models, mongoose){
     });
   };
 
-  mongoose.model('Repo', repositorySchema);
-  models.Repo = mongoose.model('Repo');
-
+  models.Repo = mongoose.model('Repo', repositorySchema);
   return models;
 };
 
