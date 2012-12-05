@@ -48,6 +48,22 @@ describe('map()', function() {
         });
       });
       app.routeCount().should.equal(11);
+      app.routeExists('del', '/v1/users/:userid/repos/:repoid/topics/:topicid').should.be.true;
+    });
+  });
+
+  describe('namespace with 3 nested resources', function() {
+    it('should build full name', function() {
+      map.namespace('v1', function() {
+        this.resources('users', function() {
+          this.resources('repos', function() {
+            this.resources('topics', function() {
+              this.resources('posts');
+            });
+          });
+        });
+      });
+      app.routeCount().should.equal(16);
     });
   });
 });
