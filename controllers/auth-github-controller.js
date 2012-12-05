@@ -38,24 +38,21 @@ passport.use(new GitHubStrategy({
   }
 ));
 
-// TODO: Clean up the route configuration
-app.get('/auth/github', passport.authenticate('github'));
 
-app.get('/auth/github/callback', 
-    passport.authenticate('github'),
-    function(req, res, next){
-      var redirectUrl = util.format(
-        '/auth-callback?login=%s&accessToken=%s',
-        req.user.username,
-        req.user.accessToken);
-      res.header('Location', redirectUrl);
-      res.send(302);
-      return next();
-    }
-);
+// GET /auth/github
+module.exports.auth = passport.authenticate('github');
 
-app.get('/auth-callback', function(req, res, next) {
-    res.send(200);
-    next();
-});
+//// TODO: Clean up the route configuration
+//app.get('/auth/github/callback', 
+//    passport.authenticate('github'),
+//
+module.exports.before = [{method: passport.authenticate('github'), only: 'callback'}];
+
+module.exports.callback = function(req, res, next) {
+  var redirectUrl = util.format('/auth-callback?login=%s&accessToken=%s',
+    req.user.username,
+    req.user.accessToken);
+  res.header('Location', redirectUrl);
+  res.send(302);
+};
 

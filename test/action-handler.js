@@ -56,15 +56,15 @@ describe('actionHandler', function(){
     });
 
     it('should return 1 when show action has middleware', function() {
-      var before = [{ method: noop, filter: {only: 'show'} }];      
+      var before = [{ method: noop, only: 'show' }];      
       var middleware = actionHandler.getBeforeMiddleware('show', before);
       middleware.length.should.equal(1);
     });
 
     it('should return 2 when for multiple conditions are true', function() {
       var before = [
-        { method: noop, filter: {only: 'index'} },
-        { method: noop, filter: {except: 'show'} }
+        { method: noop, only: 'index' },
+        { method: noop, except: 'show' }
       ];
       var middleware = actionHandler.getBeforeMiddleware('index', before);
       middleware.length.should.equal(2);

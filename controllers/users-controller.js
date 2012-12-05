@@ -1,16 +1,16 @@
 var util = require('util');
 
 // GET /users/:username
-exports.show = function(username, req, res, next){
-  User.findOneByUsername(username, next); 
+exports.show = function(req, res, next){
+  User.findOneByUsername(req.params.userid, next); 
 };
 
 // PUT /users/:username
-exports.update = function(username, req, res, next){
+exports.update = function(req, res, next){
   next();
 };
 
 // DELETE /users/:username
-exports.destroy = function(username, req, res, next){
+exports.destroy = function(req, res, next){
   next();
 };
