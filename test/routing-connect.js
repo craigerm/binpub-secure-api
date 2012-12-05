@@ -48,7 +48,8 @@ describe('map()', function() {
         });
       });
       app.routeCount().should.equal(11);
-      app.routeExists('del', '/v1/users/:userid/repos/:repoid/topics/:topicid').should.be.true;
+      app.routeExists('del', '/v1/users/:userid/repos/:repoid/topics/:topicid')
+         .should.be.true;
     });
   });
 
@@ -64,6 +65,17 @@ describe('map()', function() {
         });
       });
       app.routeCount().should.equal(16);
+    });
+  });
+
+  describe('nested route should be allowed to override :id name', function() {
+    it('should have correct named parameter in route', function() {
+      map.namespace('v1', function() {
+        this.resources('users', {id: 'username'});
+      });
+      app.routeExists('get', '/v1/users/:username').should.be.true;
+      app.routeExists('put', '/v1/users/:username').should.be.true;
+      app.routeExists('del', '/v1/users/:username').should.be.true;
     });
   });
 });
