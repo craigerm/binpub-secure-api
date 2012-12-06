@@ -17,10 +17,11 @@ var url_prefix = config.url_prefix
   , connected = false
   , models = require('./models/models')(mongoose);
 
-// These are global variables (probably will clean this up)
+// These are global variables (clean this up!)
 app = null;
 Repo = models.Repo;
 User = models.User;
+Topic = models.Topic;
 
 mongoose.connect(config.creds.mongoose_auth);
 
@@ -43,6 +44,7 @@ app = restify.createServer(server_options);
 // The url must have the port becasue it must match the oauth callback
 app.url_prefix = url_prefix + (config.port ? ':' + config.port : '');
 app.use(restify.queryParser());
+app.use(restify.bodyParser());
 app.use(passport.initialize());
 
 // On every request we check the authentication

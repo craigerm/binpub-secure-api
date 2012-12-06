@@ -1,17 +1,52 @@
-//Topic model 
 module.exports = function(models, mongoose) {
+
+  var ObjectId = mongoose.Schema.Types.ObjectId;
+
+  TopicSchema = new mongoose.Schema({
+	  repoId: ObjectId,
+    userId: ObjectId,
+    title: String,
+	  number: Number,
+    body: String,
+	  type: String,
+    createdAt: Number,
+	  updatedAt: Number,
+    //
+	  uBlue: Number,
+	  dBlue: Number,
+	  uRed: Number,
+	  dRed: Number,
+	  uGreen: Number,
+	  dGreen: Number
+  }, { collection: 'topics' });
+
+  TopicSchema.index({ 'number' : 1 }, { 'repo_id': 1 }, { 'user_id': 1 });
+
+  // Get the topics for a repository
+  TopicSchema.statics.getByRepoName = function(repoName, callback) {
+    var self = this;
+    models.Repo.findOne({title: repoName}, function(err, repo) {
+      if(err) return callback(err);
+      self.find({repoId: repo.id})
+        .sort('updatedAt', -1)
+        .exec(callback);
+    });
+  };
+
+  models.Topic = mongoose.model('Topic', TopicSchema);
+  return models;
+};
+
+//Topic model 
+var temp = function(models, mongoose) {
   console.log('entering Topic model');
   var Topic, TopicSchema, validate_url;
   TopicSchema = new mongoose.Schema({
-	  parent: String,
 	  repo_id: Number,
+    user_id: String,
+    title: String,
 	  number: Number,
-      user_id: String,
-      title: String,
-      body: String,
-	  type: String,
-	  url: String,
-      createdAt: Number,
+    createdAt: Number,
 	  updatedAt: Number,
 //
 	  uBlue: Number,
