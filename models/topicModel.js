@@ -56,12 +56,31 @@ module.exports = function(models, mongoose) {
       if(err) return callback(repoName);
       if(!repo) return callback(new RecordNotFoundError());
 
+      var jsonTopics = [];
+
       self
         .find({ repo: repo._id })
         .populate('user')
         .populate('repo')
         .sort({ updatedAt: 'desc' })
-        .exec(callback);
+        .exec(function(err, topics) {
+          if(err) return callback(err);
+          
+          async.forEach(topics, function(topic, cb) {
+            self.db.model('User')
+              .findById(topic.repo.user)
+              .exec(function(err, user) {
+                var json = topic.toJSON();
+                json.repo.user = user;
+                jsonTopics.push(json);
+                cb(err);
+              });
+          },
+          function(err) {
+            if(err) return callback(err);
+            callback(null, jsonTopics);
+          });
+        });
     });
   };
 

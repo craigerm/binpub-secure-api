@@ -50,6 +50,7 @@ module.exports = function(models, mongoose) {
     self
       .find({ topicNumber: topicNumber })
       .populate('user')
+      .sort({ createdAt: 'asc' })
       .exec(function(err, posts) {
         if(err) return callback(err);
         async.forEach(posts, function(post, cb) {
