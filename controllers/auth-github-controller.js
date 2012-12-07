@@ -51,7 +51,7 @@ module.exports.auth = passport.authenticate('github');
 // GET /auth/github/callback?code=[code]
 module.exports.callback = function(req, res, next) {
 
-  var redirectUrl = util.format('%s?login=%s&accessToken=%s', 
+  var redirectUrl = util.format('%s/?login=%s&accessToken=%s', 
     config.authCallback,
     req.user.username,
     req.user.accessToken);

@@ -13,13 +13,12 @@ function notAuthorized(res) {
 };
 
 module.exports = function(req, res, next) {
-  // If the method is say GET, we always allow it.
-  // This matched the security system for Ost API.
-  if(secureMethods.indexOf(req.method) == -1){
+
+  var accessToken = req.params.accessToken;
+  if(!accessToken && secureMethods.indexOf(req.method) == -1 && req.params.userid != 'me') {
     return next();
   }
 
-  var accessToken = req.params.accessToken;
   if(!accessToken) {
     return notAuthorized(res);
   }
@@ -27,20 +26,16 @@ module.exports = function(req, res, next) {
   // Check if user associated with token is the user that
   // the API call is trying to modify.
   session.getUserByToken(accessToken, function(err, user) {
-    if(err)
-      throw err;
-    if(!user) {
-      return notAuthorized(res);
-    }
+    if(err) throw err;
+    if(!user) return notAuthorized(res);
 
-    if(user.username != req.params.userid) {
+    if(req.params.userid != 'me' && user.username != req.params.userid) {
       return notAuthorized(res);
     }
     
     // User is allowed to change this user so add the user data to the request
     // and return 
     req.userProfile = user; 
-
     return next();
   });
 };
