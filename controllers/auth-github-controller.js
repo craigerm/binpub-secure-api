@@ -44,7 +44,6 @@ passport.use(new GitHubStrategy({
   }
 ));
 
-
 // GET /auth/github
 module.exports.auth = passport.authenticate('github');
 

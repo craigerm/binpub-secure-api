@@ -8,7 +8,6 @@ module.exports = function(models, mongoose) {
 	  repoId: ObjectId,
     userId: ObjectId,
     title: String,
-	  number: Number,
     body: String,
 	  type: String,
     createdAt: Date,

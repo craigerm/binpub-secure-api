@@ -16,8 +16,14 @@ module.exports.plugin = function(schema, options) {
   if(!options.field) {
     throw new Error('autoIncrementPlugin requires the field to be incremented');
   };
+  
+  // Add unique field to be auto-incremented
+  var field = {};
+  field[options.field] = {type: Number, unique: true};
 
-console.log('OPTIONS %', options);
+//  field[options.field] = { type: mongoose.Schema.Types.String, unique: true };
+  schema.add(field);
+
   var collectionName = schema.options.collection;
   var fieldToIncrement = options.field;
 
