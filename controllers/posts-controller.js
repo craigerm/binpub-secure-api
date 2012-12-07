@@ -11,7 +11,7 @@ module.exports.index = function(req, res, next) {
   Topic.findOne({ number: req.params.topicid} ,function(err, topic) {
     if(err) return next(err);
     if(!topic) return next(new RecordNotFoundError());
-    Post.find({ topicId: topic._id }, next);
+    Post.find({ topic: topic._id }, next);
   });
 };
 
