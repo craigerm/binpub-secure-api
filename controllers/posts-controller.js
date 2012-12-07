@@ -8,11 +8,7 @@ var allowedKeys = {
 
 // GET ../topics/:topicid/posts
 module.exports.index = function(req, res, next) {
-  Topic.findOne({ number: req.params.topicid} ,function(err, topic) {
-    if(err) return next(err);
-    if(!topic) return next(new RecordNotFoundError());
-    Post.find({ topic: topic._id }, next);
-  });
+  Post.getByTopicNumber(req.params.topicid, next);
 };
 
 // POST ../topics/:topicid/posts
@@ -35,12 +31,8 @@ module.exports.show = function(req, res, next) {
 
 // PUT ../topics/:topicid/posts/:postid
 module.exports.update = function(req, res, next) {
-  Post.findOneForUser(req.params.postid, req.userProfile.id, function(err, post) {
-    if(err) return next(err);
-    var update= utils.slice(req.params, allowedKeys);
-    update.updatedAt = new Date();
-    post.update(update, next);
-  });
+  var update= utils.slice(req.params, allowedKeys);
+  Post.updateUsersPost(req.userProfile.id, req.params.postid, update, next);
 };
 
 // DELETE ../topics/:topicid/posts/:postid

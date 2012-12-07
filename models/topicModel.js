@@ -67,10 +67,14 @@ module.exports = function(models, mongoose) {
 
   // Add a post to this topic
   TopicSchema.methods.addPost = function(post, callback) {
+    var self = this;
     post.topic = this._id;
     post.topicNumber = this.number;
     post.createdAt = new Date();
-    post.save(callback);
+    post.save(function(err, post) {
+      if(err) return callback(err);
+      self.db.model('Post').getByNumber(post.number, callback);
+    });
   };
 
   models.Topic = mongoose.model('Topic', TopicSchema);
