@@ -10,6 +10,7 @@ var mongoose = require('mongoose')
   , config = require('./config/application.js')
   , passport = require('passport')
   , permissionCheck = require('./auth/permissionCheck')
+  , autoIncrementPlugin = require('./models/plugins/autoIncrementPlugin')
   , fs = require('fs')
   , util = require('util');
 
@@ -22,6 +23,7 @@ app = null;
 Repo = models.Repo;
 User = models.User;
 Topic = models.Topic;
+Post = models.Post;
 
 mongoose.connect(config.creds.mongoose_auth);
 
@@ -29,6 +31,9 @@ mongoose.connection.on('open', function(){
   console.log("connected to MongoLab");
   connected = true;
 });
+
+// Initialize the plugins
+autoIncrementPlugin.init(mongoose);
 
 var server_options = {};
 

@@ -37,7 +37,10 @@ module.exports = function(req, res, next) {
       return notAuthorized(res);
     }
     
-    // User is allowed to change this user
+    // User is allowed to change this user so add the user data to the request
+    // and return 
+    req.userProfile = user; 
+
     return next();
   });
 };

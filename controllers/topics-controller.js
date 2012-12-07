@@ -15,7 +15,6 @@ var allowedTopicKeys = {
 
 // GET /users/:userid/repos/:repoid/topics
 module.exports.index = function(req, res, next){
-  console.log('Gettin repos by %', req.params.repoid);
   Topic.getByRepoName(req.params.repoid, function(err, topics) {
     return next(err, topics);
   });
@@ -27,11 +26,10 @@ module.exports.create = function(req, res, next) {
 
   User.findOneByUsername(req.params.userid, function(err, user) {
     Repo.findOneByRepoName(user.id, req.params.repoid, function(err, repo) {
+      if(err) return next(err);
+      if(!repo) return next(new RecordNotFoundError());
       var topic = new Topic(fields);
-      topic.repoId = repo._id
-      topic.userId = user._id;
-      topic.number = 99;
-      topic.save(next);
+      repo.addTopic(new Topic(fields), next);
     });
   });
 };
@@ -47,18 +45,17 @@ module.exports.show = function(req, res, next) {
 
 // PUT /users/:userid/repos/:repoid/topics/:topicid
 module.exports.update = function(req, res, next) {
-  next();
+  var updates = utils.slice(req.params, allowedTopicKeys);
+  updates.updatedAt = new Date();
+  Topic.findOneAndUpdate({number: req.params.topicid}, updates, next);
 };
 
 // DELETE /users/:userid/repos/:repoid/topics/:topicid
 module.exports.destroy = function(req, res, next) {
-  console.log('HHERE WITRH %s', req.params.topicid);
   Topic.findOne({number: req.params.topicid}, function(err, topic) {
     if(err) return next(err);
     if(!topic) return next();
     topic.remove(function(err){
-      console.log('DELETE');
-      console.log('ERR %', err);
       next(err);       
     });
   });

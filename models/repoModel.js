@@ -40,6 +40,14 @@ module.exports = function(models, mongoose){
     });
   };
 
+  // Add a topic to the repository
+  repositorySchema.methods.addTopic = function(topic, callback) {
+    topic.repoId = this._id;
+    topic.userId = this.userId;
+    topic.createdAt = new Date();
+    topic.save(callback);
+  };
+
   models.Repo = mongoose.model('Repo', repositorySchema);
   return models;
 };

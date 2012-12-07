@@ -135,15 +135,10 @@ module.exports = function(models, mongoose) {
     user.location = data.location;
     user.createdAt = data.created_at;
 
-    // Perform upsert (create object if doesn't exist)
-    var options = {
-      upsert: true
-    };
+    var query = { githubId: profile.id };
+    var options = { upsert: true };
 
-    // We create the user account if it doesn't exist or update it if it does
-    this.update({ githubId: profile.id }, user, options, function(err, numberAffected, user){
-      callback(err, user);
-   });
+    this.findOneAndUpdate(query, user, options, callback);
   };
 
   models.User = mongoose.model('User', UserSchema);

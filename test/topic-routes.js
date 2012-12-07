@@ -19,11 +19,10 @@ describe('topics routes', function() {
   });
 
   describe('GET /v1/users/:username/repos/:reponame/topics/topicid', function() {
-    it('should return 200', function(done) {
+    it('should return 404 for missing topic', function(done) {
       request(server)
-        .get('/v1/users/craigerm/repos/ysenate-info/topics/1')
-        .expect(200, done);
+        .get('/v1/users/craigerm/repos/ysenate-info/topics/9999')
+        .expect(404, done);
     });
-});
-
+  });
 });

@@ -1,5 +1,40 @@
-//post model
+var autoIncrementPlugin = require('./plugins/autoIncrementPlugin');
+
 module.exports = function(models, mongoose) {
+  var ObjectId = mongoose.Schema.Types.ObjectId;
+
+  var PostSchema = new mongoose.Schema({
+    topicId: ObjectId,
+    number: { type: Number, unique: true },
+    userId: ObjectId,
+    topicNumber: Number,
+    text: String,
+    createdAt: Date,
+    updatedAt: Date
+  }, { collection: 'posts' });
+
+  PostSchema.index({'userId': 1}, {'topicId': 1}, {'topicNumber': 1});
+  PostSchema.plugin(autoIncrementPlugin.plugin, {field: 'number'});
+
+  // This will get a post that belongs to the user. This is used for updating
+  // or deletion.
+  PostSchema.statics.findOneForUser = function(postNumber, ownerId, callback) {
+    this.findOne({ number: postNumber }, function(err, post) {
+      if(err) return callback(err);
+
+      if(post && post.userId == ownerId) {
+        return callback(null, post);
+      }
+      return callback(new RecordNotFoundError());
+    });
+  };
+
+  models.Post = mongoose.model('Post', PostSchema);
+  return models; 
+};
+
+//post exports model
+var temp= function(models, mongoose) {
   var Post, PostSchema, color, validate_url;
   PostSchema = new mongoose.Schema({
       post_id: String,
