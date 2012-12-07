@@ -1,20 +1,18 @@
-var Errors = require('../models/errors');
-var RecordNotFoundError = Errors.RecordNotFoundError;
+var Errors = require('../models/errors')
+  , RecordNotFoundError = Errors.RecordNotFoundError
+  , async = require('async');
 
 module.exports = function(models, mongoose) {
   var UserSchema = new mongoose.Schema({
-    githubId: Number,
-    username: String,
-    // I dont think we should be saving the tokens
-    //in the DB. We store it in Redis is authenticated
-    //authentication_token: String,
-    name: String,
-    email: String,
-    profileUrl: String,
+    githubId: { type: Number, required: true },
+    username: { type: String, required: true },
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    profileUrl: { type: String, required: true },
     enabledEmailNotifications: Boolean,
     gravatarId: String,
     avatarUrl: String,
-    type: { type: String }, // Type has special meaning. See mongoose docs for more info
+    type: { type: String, required: true }, // Type has special meaning. See mongoose docs for more info
     location: String,
     //githubToken: String,
     createdAt: Date,
@@ -51,7 +49,7 @@ module.exports = function(models, mongoose) {
 	  deputy_id: Number
   }, { collection: 'users' });
 
-  UserSchema.index({ 'authentication_token': 1}, {'email':1}, {'login': 1});
+  UserSchema.index({ 'username': 1}, {'email':1}, {'githubId': 1});
 
   // Sync repositories for user
   UserSchema.methods.syncGitHubData = function(data, callback) {
@@ -66,16 +64,30 @@ module.exports = function(models, mongoose) {
       });
   };
 
-  // Deletes a user and related repos by the username
-  UserSchema.statics.removeByUsername = function(username, callback) {
-    this.findOne({ username: username}, function(err, user) {
+  // Delete user and all user data
+  UserSchema.statics.removeWithRelated = function(userId, callback) {
+    this.findById(userId, function(err, user) {
       if(err) return callback(err);
       if(!user) return callback(new RecordNotFoundError());
 
-      // Delete repositories with user
-//      user.remove(function(){
-        
-//      });
+      async.series([
+        function(cb) {
+          user.remove(cb);
+        },
+        function(cb) {
+          Repo.remove({ userId: userId }, cb);
+        },
+        function(cb) {
+          Topic.remove({ userId: userId }, cb);          
+        },
+        function(cb) {
+          Post.remove({ userId: userId }, cb);
+        }
+      ],
+      function(err, results) {
+        if(err) return callback(err);
+        callback();
+      });
     });
   };
 
@@ -145,91 +157,3 @@ module.exports = function(models, mongoose) {
   return models;
 };
 
-
-//user model 
-var temp =  function(models, mongoose) {
-  console.log('entering user model');
-  var User, UserSchema, validate_url;
-  UserSchema = new mongoose.Schema({
-	  github_id: Number,
-    login: String,
-    authentication_token: String,
-    username: String,
-	  email: String,
-	  enabled_email_notifications: Boolean,
-	  gravatar_id: String,
-	  type: String,
-	  github_token: String,
-    created_at: Date,
-	  updated_at: Date,
-
-	  uBlueFor: Number,
-	  dBlueFor: Number,
-	  uRedFor: Number,
-	  dRedFor: Number,
-	  uGreenFor: Number,
-	  dGreenFor: Number,
-//
-	  uBlueBy: Number,
-	  dBlueBy: Number,
-	  uRedBy: Number,
-	  dRedBy: Number,
-	  uGreenBy: Number,
-	  dGreenBy: Number,
-// the Card is a vote Card that tracks the list of items the person has voted for/against per color
-// the vote Card is used by the neighborhooding algorithm to match citizens, pointer reference kept here.
-	  uBlueCard: String,
-	  dBlueCard: String,
-	  uRedCard: String,
-	  dRedCard: String,
-	  uGreenCard: String,
-	  dGreenCard: String,
-// the friendList is also used to match users, pointer reference kept here.
-      friendList: String,
-// the location is also used to match users.
-      location: String,
-//  heap_id and deputy_id are products of neighborhood algorithm which defines user positions in neighborhood.
-      previous_heap_id: Number,
-      heap_id: Number,
-	  previous_deputy_id: Number,
-	  deputy_id: Number
-    }, 
-	{collection: 'users'});
-
-  
-  UserSchema.index({ 'authentication_token': 1}, {'email':1}, {'login': 1});
-  mongoose.model('User', UserSchema);
-  models.User = mongoose.model('User');
-  
-  models.getUser = function getUser(req, res, next){
-    console.log('getUser');
-    models.User.find({ name: req.params.username}).execFind(function (arr,data) {
-      console.log('finding user: '+req.param.username);
-	  console.log(arr);
-	  console.log(data);
-      res.send(data);
-    });
-  };
-  
-  models.modifyUser = function modifyUser(req, res, next){
-    console.log('modifyUser');
-    models.User.find({ name: req.params.username}).execFind(function (arr,data) {
-      console.log('founduser: '+req.param.username);
-	  console.log(arr);
-	  console.log(data);      user.save(function () {
-        console.log('user save');
-        res.send(req.body);
-      });
-    });
-
-  }; 
-    models.deleteUser = function modifyUser(req, res, next){
-    console.log('deleteUser');
-	res.send({ userDelete: 'not implemented'});
-  }; 
-  validate_url = function() {
-  
-  };
-  
-  return models
-};

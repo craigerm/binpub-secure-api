@@ -18,7 +18,6 @@ describe('user routes', function(){
         .expect('Content-Type', /json/)
         .expect(404, done);
     });
-
   });
 
   describe('DELETE /v1/users/:id', function(){
