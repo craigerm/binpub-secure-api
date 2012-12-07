@@ -1,6 +1,6 @@
 var config = {
   creds: {
-    mongoose_auth: 'mongodb://localhost/binpub_test
+    mongoose_auth: 'mongodb://localhost/binpub_test'
   }
 };
 
