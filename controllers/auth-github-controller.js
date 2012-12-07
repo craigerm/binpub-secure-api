@@ -1,4 +1,5 @@
 var secret = require('../secret/secret')
+  , config = require('../config/application')
   , encryption = require('../auth/encryption')
   , passport = require('passport')
   , session = require('../auth/session')
@@ -7,8 +8,8 @@ var secret = require('../secret/secret')
 
 var GITHUB_CLIENT_ID = secret.github_client_id;
 var GITHUB_CLIENT_SECRET = secret.github_client_secret;
-var GITHUB_CALLBACK_URL = app.url_prefix + '/auth/github/callback';
-var GITHUB_LOGIN_URL = app.url_prefix + '/auth/github';
+var GITHUB_CALLBACK_URL = config.url_prefix + '/auth/github/callback';
+var GITHUB_LOGIN_URL = config.url_prefix + '/auth/github';
 
 // Middleware
 module.exports.before = [
@@ -39,7 +40,7 @@ passport.use(new GitHubStrategy({
         accessToken: accessToken
       };
       session.addUser(accessToken, userData);
-      return done(err, user);      
+      return done(err, userData);      
     });
   }
 ));
@@ -49,7 +50,9 @@ module.exports.auth = passport.authenticate('github');
 
 // GET /auth/github/callback?code=[code]
 module.exports.callback = function(req, res, next) {
-  var redirectUrl = util.format('/auth-callback?login=%s&accessToken=%s',
+
+  var redirectUrl = util.format('%s?login=%s&accessToken=%s', 
+    config.authCallback,
     req.user.username,
     req.user.accessToken);
 

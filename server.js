@@ -14,12 +14,11 @@ var mongoose = require('mongoose')
   , fs = require('fs')
   , util = require('util');
 
-var url_prefix = config.url_prefix
+var app = null
   , connected = false
   , models = require('./models/models')(mongoose);
 
 // These are global variables (clean this up!)
-app = null;
 Repo = models.Repo;
 User = models.User;
 Topic = models.Topic;
@@ -47,7 +46,6 @@ var restify = require('restify');
 app = restify.createServer(server_options);
 
 // The url must have the port becasue it must match the oauth callback
-app.url_prefix = url_prefix + (config.port ? ':' + config.port : '');
 app.use(restify.queryParser());
 app.use(restify.bodyParser());
 app.use(passport.initialize());
@@ -72,7 +70,7 @@ require('./config/routes')(app);
 require('./controllers/auth-github-controller');
 
 app.listen(port, function() {
-  console.log('%s listening at %s, love & peace', app.name, app.url_prefix);
+  console.log('%s listening at %s, love & peace', app.name, config.url_prefix);
 });
 
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));

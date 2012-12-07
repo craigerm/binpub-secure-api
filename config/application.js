@@ -1,7 +1,8 @@
 var config = {
   https: false,
   port: 3000,
-  url_prefix: 'http://localhost', //'https://www.binpub.com';
+  url_prefix: 'http://localhost:3000', //'https://www.binpub.com';
+  authCallback: '/auth-callback',
   creds: {
     redis_port: undefined,
     redis_host: undefined,
