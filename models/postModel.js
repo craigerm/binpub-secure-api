@@ -1,19 +1,20 @@
-var autoIncrementPlugin = require('./plugins/autoIncrementPlugin');
+var RecordNotFoundError = require('./errors').RecordNotFoundError
+  , autoIncrementPlugin = require('./plugins/autoIncrementPlugin');
 
 module.exports = function(models, mongoose) {
   var ObjectId = mongoose.Schema.Types.ObjectId;
 
   var PostSchema = new mongoose.Schema({
-    topicId: { type: ObjectId, required: true},
+    topic: { type: ObjectId, required: true, ref: 'Topic' },
     number: { type: Number, unique: true },
-    userId: { type: ObjectId, required: true },
+    user: { type: ObjectId, required: true, ref: 'User' },
     topicNumber: { type: Number, required: true },
     text: { type: String, required: true },
     createdAt: { type: Date, required: true },
     updatedAt: Date
   }, { collection: 'posts' });
 
-  PostSchema.index({'userId': 1}, {'number': 1}, {'topicId': 1}, {'topicNumber': 1});
+  PostSchema.index({'user': 1}, {'number': 1}, {'topic': 1}, {'topicNumber': 1});
 
   PostSchema.plugin(autoIncrementPlugin.plugin, {field: 'number'});
 
@@ -23,11 +24,23 @@ module.exports = function(models, mongoose) {
     this.findOne({ number: postNumber }, function(err, post) {
       if(err) return callback(err);
 
-      if(post && post.userId == ownerId) {
+      if(post && post.user == ownerId) {
         return callback(null, post);
       }
       return callback(new RecordNotFoundError());
     });
+  };
+
+  PostSchema.statics.getByNumber = function(postNumber, callback) {
+    this
+      .findOne({ number: postNumber })
+      .populate('topic')
+      .populate('user')
+      .exec(function(err, post) {
+        if(err) return callback(err);
+        if(!post) return callback(new RecordNotFoundError());
+        return callback(null, post);
+      });
   };
 
   models.Post = mongoose.model('Post', PostSchema);

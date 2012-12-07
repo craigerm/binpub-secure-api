@@ -23,18 +23,14 @@ module.exports.create = function(req, res, next) {
     if(!topic) return next(new RecordNotFoundError());
     var fields = utils.slice(req.params, allowedKeys);
     var post = new Post(fields);
-    post.userId = req.userProfile.id;
+    post.user = req.userProfile.id;
     topic.addPost(post, next);
   });
 };
 
 // GET ../topics/:topicid/posts/:postid
 module.exports.show = function(req, res, next) {
-  Post.findOne({ number: req.params.postid }, function(err, post) {
-    if(err) return next(err);
-    if(!post) return next(new RecordNotFoundError());
-    next(null, post);
-  });
+  Post.getByNumber(req.params.postid, next);
 };
 
 // PUT ../topics/:topicid/posts/:postid
