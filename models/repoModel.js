@@ -53,11 +53,22 @@ module.exports = function(models, mongoose){
     topic.save(function(err, topic) {
       // Ther doesn't seem to be a better way to do this
       if(err) return callback(err); 
+
+      // After we save the topic refetch it with the full ref docs
+      // that the API needs. 
       self.db.model('Topic')
         .findById(topic._id)
         .populate('user')
         .populate('repo')
-        .exec(callback);
+        .exec(function(err, topic) {
+          self.db.model('User')
+            .findById(topic.repo.user)
+            .exec(function(err, user) {
+              var jsonTopic = topic.toJSON();
+              jsonTopic.repo.user = user;
+              callback(err, jsonTopic);
+            });
+        });
     });
   };
 

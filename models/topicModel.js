@@ -37,14 +37,15 @@ module.exports = function(models, mongoose) {
         if(err) return callback(err);
         if(!topic) return callback(new RecordNotFoundError());
 
-        // There isn't a simple way to do this in mongoose yet.
-        // We'll come back to this.
-       // models.User.findById(topic.repo.user, function(err, user) {
-         // if(err) return callback(err);
-          //topic.repo.user = user;
-         // callback(null, topic);
-        //});
-        callback(null, topic);
+        // Not sure what the best approach is here. Ideally mongo would support
+        // .populate('repo.user') for ref types and not just sub-docs.
+        models.User
+          .findById(topic.repo.user)
+          .exec(function(err, user) {
+            var json = topic.toJSON();
+            json.repo.user = user;
+            callback(err, json);
+          });
       });
   };
 
