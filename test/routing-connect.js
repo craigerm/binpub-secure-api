@@ -16,9 +16,9 @@ describe('map()', function() {
         map.namespace('v1', function() {
           this.resources('users');
         });
-        app.routeCount().should.equal(3);
+        app.routeCount().should.equal(2);
         app.routeExists('get', '/v1/users/:userid').should.be.true;
-        app.routeExists('put', '/v1/users/:userid').should.be.true;
+//        app.routeExists('put', '/v1/users/:userid').should.be.true;
         app.routeExists('del', '/v1/users/:userid').should.be.true;
      });
   });
@@ -31,7 +31,7 @@ describe('map()', function() {
         });
       });
 
-      app.routeCount().should.equal(6);
+      app.routeCount().should.equal(5);
       app.routeExists('get', '/v1/users/:userid/repos');
       app.routeExists('get', '/v1/users/:userid/repos/:repoid');
       app.routeExists('post','/v1/users/:userid/repos/:repoid');
@@ -47,7 +47,7 @@ describe('map()', function() {
           });
         });
       });
-      app.routeCount().should.equal(11);
+      app.routeCount().should.equal(10);
       app.routeExists('del', '/v1/users/:userid/repos/:repoid/topics/:topicid')
          .should.be.true;
     });
@@ -64,7 +64,7 @@ describe('map()', function() {
           });
         });
       });
-      app.routeCount().should.equal(16);
+      app.routeCount().should.equal(15);
     });
   });
 
@@ -74,7 +74,6 @@ describe('map()', function() {
         this.resources('users', {id: 'username'});
       });
       app.routeExists('get', '/v1/users/:username').should.be.true;
-      app.routeExists('put', '/v1/users/:username').should.be.true;
       app.routeExists('del', '/v1/users/:username').should.be.true;
     });
   });

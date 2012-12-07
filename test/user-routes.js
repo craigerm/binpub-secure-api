@@ -21,14 +21,6 @@ describe('user routes', function(){
 
   });
 
-  describe('PUT /v1/users/:id', function(){
-    it('should be unauthorized if no access token', function(done){
-      request(server)
-        .put('/v1/users/craigerm')        
-        .expect(401, done);
-    });
-  });
-
   describe('DELETE /v1/users/:id', function(){
     it('should be unauthroized if no access token', function(done){
       request(server)
