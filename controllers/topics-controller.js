@@ -3,14 +3,7 @@ var utils = require('../lib/utils')
 
 var allowedTopicKeys = {
   title: 1,
-  body: 1,
-  type: 1,
-  uBlue: 1,
-  dBlue: 1,
-  uRed: 1,
-  dRed: 1,
-  uGreen: 1,
-  dGreen: 1
+  body: 1
 };
 
 // GET /users/:userid/repos/:repoid/topics

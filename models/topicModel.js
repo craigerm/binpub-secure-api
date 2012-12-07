@@ -5,12 +5,11 @@ module.exports = function(models, mongoose) {
   var ObjectId = mongoose.Schema.Types.ObjectId;
 
   TopicSchema = new mongoose.Schema({
-	  repoId: ObjectId,
-    userId: ObjectId,
-    title: String,
-    body: String,
-	  type: String,
-    createdAt: Date,
+    repoId: { type: ObjectId, required: true },
+    userId: { type: ObjectId, required: true },
+    title: { type: String, required: true },
+    body: { type: String, required: true },
+    createdAt: { type: Date, required: true },
 	  updatedAt: Date,
     //
 	  uBlue: Number,
@@ -21,7 +20,7 @@ module.exports = function(models, mongoose) {
 	  dGreen: Number
   }, { collection: 'topics' });
 
-  TopicSchema.index({ 'number' : 1 }, { 'repo_id': 1 }, { 'user_id': 1 });
+  TopicSchema.index({ 'repoId': 1 }, { 'userId': 1 });
 
   // Make the number field auto-incrementable
   TopicSchema.plugin(autoIncrementPlugin.plugin, {field: 'number'});
