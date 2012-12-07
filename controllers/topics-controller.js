@@ -1,4 +1,5 @@
 var utils = require('../lib/utils')
+  , async = require('async')
   , RecordNotFoundError = require('../models/errors').RecordNotFoundError;
 
 var allowedTopicKeys = {
@@ -21,7 +22,6 @@ module.exports.create = function(req, res, next) {
     Repo.findOneByRepoName(user.id, req.params.repoid, function(err, repo) {
       if(err) return next(err);
       if(!repo) return next(new RecordNotFoundError());
-      var topic = new Topic(fields);
       repo.addTopic(new Topic(fields), next);
     });
   });
@@ -29,11 +29,7 @@ module.exports.create = function(req, res, next) {
 
 // GET /users/:userid/repos/:repoid/topics/:topicid
 module.exports.show = function(req, res, next) {
-  Topic.findOne({number: req.params.topicid}, function(err, topic) {
-    if(err) return next(err);
-    if(!topic) return next(new RecordNotFoundError());
-    return next(null, topic);
-  });
+  Topic.getByNumber(req.params.topicid, next);
 };
 
 // PUT /users/:userid/repos/:repoid/topics/:topicid

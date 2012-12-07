@@ -6,7 +6,7 @@ module.exports = function(models, mongoose){
 
   var repositorySchema = new mongoose.Schema({
     initialCommit: String,
-    userId: ObjectId,
+    user: { type: ObjectId, required: true, ref: 'User' }, // Reference to user. 
     githubId: Number,
     title: String,
     body: String,
@@ -22,30 +22,43 @@ module.exports = function(models, mongoose){
   }, { collection: 'repos' });
 
   // Add any indexes
-  repositorySchema.index({ 'user_id': 1 });
+  repositorySchema.index({ 'user': 1 });
 
   // Find the repositories that belong to the user
   repositorySchema.statics.findByUserId = function(userId, callback){
-    this.find({ userId: userId }).exec(callback);
+    this
+      .find({ user: userId })
+      .populate('user')
+      .exec(callback);
   };
 
   // Gets a repository by name for the user. Throws error if not found
   repositorySchema.statics.findOneByRepoName = function(userId, repoName, callback){
-    this.findOne({ userId: userId, title: repoName }, function(err, data){
-      if(err) return callback(err);
-      if(data == null){
-        return callback(new RecordNotFoundError());
-      }
-      callback(null, data);
-    });
+    this
+      .findOne({ user: userId, title: repoName })
+      .populate('user')
+      .exec(function(err, repo) {
+        if(err) return callback(err);
+        if(!repo) return callback(new RecordNotFoundError());
+        callback(null, repo);
+      });
   };
 
   // Add a topic to the repository
   repositorySchema.methods.addTopic = function(topic, callback) {
-    topic.repoId = this._id;
-    topic.userId = this.userId;
+    var self = this;
+    topic.repo = this._id;
+    topic.user = this.user.id;
     topic.createdAt = new Date();
-    topic.save(callback);
+    topic.save(function(err, topic) {
+      // Ther doesn't seem to be a better way to do this
+      if(err) return callback(err); 
+      self.db.model('Topic')
+        .findById(topic._id)
+        .populate('user')
+        .populate('repo')
+        .exec(callback);
+    });
   };
 
   models.Repo = mongoose.model('Repo', repositorySchema);

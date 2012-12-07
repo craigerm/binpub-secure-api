@@ -55,7 +55,7 @@ module.exports = function(models, mongoose) {
   UserSchema.methods.syncGitHubData = function(data, callback) {
     var self = this;
     self.db.model('Repo')
-      .where('userId')
+      .where('user')
       .equals(self.id)
       .remove(function(err){
         if(err)
@@ -75,7 +75,7 @@ module.exports = function(models, mongoose) {
           user.remove(cb);
         },
         function(cb) {
-          Repo.remove({ userId: userId }, cb);
+          Repo.remove({ user: userId }, cb);
         },
         function(cb) {
           Topic.remove({ userId: userId }, cb);          
@@ -108,7 +108,7 @@ module.exports = function(models, mongoose) {
     for(var i=0; i < data.length; i++){
       var item = data[i];
       var repo = new models.Repo();
-      repo.userId = userId;
+      repo.user = userId;
       repo.repoId = item.id;
       repo.title = item.name;
       repo.link = item.html_url;
