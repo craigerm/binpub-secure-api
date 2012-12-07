@@ -1,6 +1,6 @@
 var async = require('async')
   , autoIncrementPlugin = require('./plugins/autoIncrementPlugin')
-  , RecordNotFoundError = require('./errors');
+  , RecordNotFoundError = require('./errors').RecordNotFoundError;
 
 module.exports = function(models, mongoose) {
 
