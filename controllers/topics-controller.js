@@ -41,7 +41,7 @@ module.exports.update = function(req, res, next) {
 
 // DELETE /users/:userid/repos/:repoid/topics/:topicid
 module.exports.destroy = function(req, res, next) {
-  Topic.findOne({number: req.params.topicid}, function(err, topic) {
+  Topic.findOne({number: req.params.topicid, user: req.userProfile.id}, function(err, topic) {
     if(err) return next(err);
     if(!topic) return next();
     topic.remove(function(err){
