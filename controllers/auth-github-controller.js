@@ -1,15 +1,14 @@
-var secret = require('../secret/secret')
-  , config = require('../config/application')
+var config = require('../config/application')
   , encryption = require('../auth/encryption')
   , passport = require('passport')
   , session = require('../auth/session')
   , util = require('util')
   , GitHubStrategy = require('passport-github').Strategy
 
-var GITHUB_CLIENT_ID = secret.github_client_id;
-var GITHUB_CLIENT_SECRET = secret.github_client_secret;
-var GITHUB_CALLBACK_URL = config.url_prefix + '/auth/github/callback';
-var GITHUB_LOGIN_URL = config.url_prefix + '/auth/github';
+var GITHUB_CLIENT_ID = process.env.GITHUB_APP_ID
+  , GITHUB_CLIENT_SECRET = process.env.GITHUB_APP_SECRET
+  , GITHUB_CALLBACK_URL = config.url_prefix + '/auth/github/callback'
+  , GITHUB_LOGIN_URL = config.url_prefix + '/auth/github';
 
 // Middleware
 module.exports.before = [
