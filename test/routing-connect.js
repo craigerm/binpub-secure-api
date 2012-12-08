@@ -18,7 +18,6 @@ describe('map()', function() {
         });
         app.routeCount().should.equal(2);
         app.routeExists('get', '/v1/users/:userid').should.be.true;
-//        app.routeExists('put', '/v1/users/:userid').should.be.true;
         app.routeExists('del', '/v1/users/:userid').should.be.true;
      });
   });
