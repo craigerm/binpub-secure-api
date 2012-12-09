@@ -1,4 +1,10 @@
-var GitHubApi = require('../lib/githubapi');
+var GitHubApi = require('../lib/githubapi')
+  , security = require('../auth/security');
+
+module.exports.before = [
+  { method: security.authenticate, only: ['create'] },
+  { method: security.checkPermission, only: ['create'] }
+];
 
 // POST /v1/users/:username/sync_repos
 module.exports.create = function(req, res, next) {

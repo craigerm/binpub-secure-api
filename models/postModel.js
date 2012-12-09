@@ -32,16 +32,13 @@ module.exports = function(models, mongoose) {
     });
   };
 
-  PostSchema.statics.updateUsersPost = function(userId, postId, update, callback) {
-    this
-      .findOneForUser(postId, userId)
-      .exec(function(err, post) {
-        if(err) return callback(err);
-        update.updatedAt = new Date();
-        post.update(update, function(err, post) {
-          self.getByNumber(post.number, callback);         
-        });
-      });
+  PostSchema.statics.updateByNumber = function(postNumber, update, callback) {
+    var self = this;
+    update.updatedAt = new Date();
+    self.update({ number: postNumber }, update, function(err) {
+      if(err) return callback(err);
+      self.getByNumber(postNumber, callback);
+    });
   };
 
   PostSchema.statics.getByTopicNumber = function(topicNumber, callback) { 

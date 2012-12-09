@@ -50,9 +50,6 @@ app.use(restify.queryParser());
 app.use(restify.bodyParser());
 app.use(passport.initialize());
 
-// On every request we check the authentication
-app.use(permissionCheck);
-
 // Set up our routes and start the server
 app.use(function setDefaultHeaders(req, res, next){
   res.header("Access-Control-Allow-Origin", "*"); 

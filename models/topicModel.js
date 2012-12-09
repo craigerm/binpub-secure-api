@@ -50,37 +50,43 @@ module.exports = function(models, mongoose) {
   };
 
   // Get the topics for a repository
-  TopicSchema.statics.getByRepoName = function(repoName, callback) {
+  // TODO: This is pretty ugly. We probably should optimize our data model for
+  // these types of queries.
+  TopicSchema.statics.getByRepoName = function(username, repoName, callback) {
     var self = this;
-    models.Repo.findOne({ title: repoName }, function(err, repo) {
-      if(err) return callback(repoName);
-      if(!repo) return callback(new RecordNotFoundError());
+    self.db.model('User').findOne({ username: username }, function(err, user) {
+      if(err) return callback(err);
+      if(!user) return callback(new RecordNotFoundError());
 
-      var jsonTopics = [];
+      self.db.model('Repo').findOne({ user: user._id, title: repoName }, function(err, repo) {
+        if(err) return callback(repoName);
+        if(!repo) return callback(new RecordNotFoundError());
 
-      self
-        .find({ repo: repo._id })
-        .populate('user')
-        .populate('repo')
-        .sort({ updatedAt: 'desc' })
-        .exec(function(err, topics) {
-          if(err) return callback(err);
-          
-          async.forEach(topics, function(topic, cb) {
-            self.db.model('User')
-              .findById(topic.repo.user)
-              .exec(function(err, user) {
-                var json = topic.toJSON();
-                json.repo.user = user;
-                jsonTopics.push(json);
-                cb(err);
-              });
-          },
-          function(err) {
+        var jsonTopics = [];
+
+        self.db.model('Topic')
+          .find({ repo: repo._id })
+          .populate('user')
+          .populate('repo')
+          .sort({ updatedAt: 'desc' })
+          .exec(function(err, topics) {
             if(err) return callback(err);
-            callback(null, jsonTopics);
+            async.forEach(topics, function(topic, cb) {
+              self.db.model('User')
+                .findById(topic.repo.user)
+                .exec(function(err, user) {
+                  var json = topic.toJSON();
+                  json.repo.user = user;
+                  jsonTopics.push(json);
+                  cb(err);
+                });
+            },
+            function(err) {
+              if(err) return callback(err);
+              callback(null, jsonTopics);
+            });
           });
-        });
+      });
     });
   };
 
