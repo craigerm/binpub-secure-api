@@ -48,7 +48,9 @@ module.exports.create = function(req, res, next) {
     if(err) return next(new RecordNotFoundError());
     Repo.findOneByRepoName(user._id, req.params.repoid, function(err, repo) {
         if(err) return next(err);
-        repo.addTopic(new Topic(fields), next);
+        var topic = new Topic(fields);
+        topic.user = req.userProfile.id;
+        repo.addTopic(topic, next);
     });
   });
 };

@@ -48,7 +48,6 @@ module.exports = function(models, mongoose){
   repositorySchema.methods.addTopic = function(topic, callback) {
     var self = this;
     topic.repo = this._id;
-    topic.user = this.user.id;
     topic.createdAt = new Date();
     topic.save(function(err, topic) {
       // Ther doesn't seem to be a better way to do this
