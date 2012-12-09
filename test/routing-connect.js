@@ -1,6 +1,6 @@
 var map = require('../lib/routing-connect')
   , should = require('should')
-  , FakeApp = require('./fake-app');
+  , FakeApp = require('./fakes/app');
 
 describe('map()', function() {
 

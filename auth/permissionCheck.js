@@ -31,12 +31,16 @@ module.exports = function(req, res, next) {
 
     var userId = req.params.userid || req.params.login;
 
-    if(req.params.userid != 'me' && user.username != userId) {
-      return notAuthorized(res);
+    // If we have a user authenticated and they are doing a GET request it's
+    // fine. All other requests must match the user specified in the url.
+    if(secureMethods.indexOf(req.method) != -1) {
+      if(user.username != req.params.userid) {
+        return notAuthorized(res);
+      }
     }
-    
-    // User is allowed to change this user so add the user data to the request
-    // and return 
+
+    // The request is allowed for the current user. Either they are doing a GET
+    // request
     req.userProfile = user; 
     return next();
   });
