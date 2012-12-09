@@ -29,7 +29,9 @@ module.exports = function(req, res, next) {
     if(err) throw err;
     if(!user) return notAuthorized(res);
 
-    if(req.params.userid != 'me' && user.username != req.params.userid) {
+    var userId = req.params.userid || req.params.login;
+
+    if(req.params.userid != 'me' && user.username != userId) {
       return notAuthorized(res);
     }
     

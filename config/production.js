@@ -1,10 +1,14 @@
+var url = require('url')
+  , redisUrl = url.parse(process.env.REDISTOGO_URL);
+
 var config = {
-  authCallback: 'http://localhost:3333/auth-callback',
-  port: 80,
-  url: process.env.BINPUB_API_URL, 
+  authCallback: process.env.BINPUB_AUTH_CALLBACK,
+  port: process.env.PORT || 3000,
+  url_prefix: process.env.BINPUB_API_URL, 
   creds: {
-    redis_port: undefined, 
-    redis_host: process.env.REDISTOGO_URL,
+    redis_auth: redisUrl.auth.split(':')[1],
+    redis_port: redisUrl.port,
+    redis_host: redisUrl.hostname,
     mongoose_auth: process.env.MONGOLAB_URI
   }
 };

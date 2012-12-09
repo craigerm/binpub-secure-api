@@ -60,16 +60,13 @@ app.use(function setDefaultHeaders(req, res, next){
   next();
 });
 
-// Set the port of the default
-var port = config.port || (config.https === true ? 443 : 3000);
-
 // Configure all the routes
 require('./config/routes')(app);
    
 // Our oAuth controllers
 require('./controllers/auth-github-controller');
 
-app.listen(port, function() {
+app.listen(config.port, function() {
   console.log('%s listening at %s, love & peace', app.name, config.url_prefix);
 });
 
