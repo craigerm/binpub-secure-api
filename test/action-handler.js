@@ -69,5 +69,17 @@ describe('actionHandler', function(){
       var middleware = actionHandler.getBeforeMiddleware('index', before);
       middleware.length.should.equal(2);
     });
+
+    it('should return 1 for action not specified in except array', function() {
+      var before = [ { method: noop, except: ['index', 'show'] } ];
+      var middleware = actionHandler.getBeforeMiddleware('destroy', before);
+      middleware.length.should.equal(1);
+    });
+
+    it('should allow all actions if no except or only filter', function() {
+      var before = [ {method: noop } ];
+      var middleware = actionHandler.getBeforeMiddleware('create', before);
+      middleware.length.should.equal(1);
+    });
   });
 });
