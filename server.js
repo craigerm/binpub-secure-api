@@ -9,7 +9,6 @@ process.on('uncaughtException', function(err) {
 var mongoose = require('mongoose')
   , config = require('./config/application.js')
   , passport = require('passport')
-  , permissionCheck = require('./auth/permissionCheck')
   , autoIncrementPlugin = require('./models/plugins/autoIncrementPlugin')
   , fs = require('fs')
   , util = require('util');
