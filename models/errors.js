@@ -15,18 +15,21 @@ AbstractError.prototype.name = 'Abstract Error';
 
 // This is out generic record not found error
 var RecordNotFoundError = function(msg) {
+  this.statusCode = 404;
+  msg = msg || 'Record Not Found';
   RecordNotFoundError.super_.call(this, msg, this.constructor);
 };
 
 util.inherits(RecordNotFoundError, AbstractError);
-RecordNotFoundError.prototype.message = 'Record Not Found';
 
 var NotAuthorizedError = function(msg) { 
+  this.statusCode = 401;
+  msg = msg || 'Not Authorized';
   NotAuthorizedError.super_.call(this, msg, this.constructor);
 };
 
 util.inherits(NotAuthorizedError, AbstractError);
-NotAuthorizedError.prototype.message = 'Not Authorized';
 
 // Export all our custom errors
 module.exports.RecordNotFoundError = RecordNotFoundError;
+module.exports.NotAuthorizedError = NotAuthorizedError;
