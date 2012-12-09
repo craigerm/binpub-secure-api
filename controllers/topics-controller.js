@@ -47,10 +47,10 @@ module.exports.create = function(req, res, next) {
   User.findOne({ username: req.params.userid }, function(err, user) {
     if(err) return next(new RecordNotFoundError());
     Repo.findOneByRepoName(user._id, req.params.repoid, function(err, repo) {
-        if(err) return next(err);
-        var topic = new Topic(fields);
-        topic.user = req.userProfile.id;
-        repo.addTopic(topic, next);
+      if(err) return next(err);
+      var topic = new Topic(fields);
+      topic.user = req.userProfile.id;
+      repo.addTopic(topic, next);
     });
   });
 };
